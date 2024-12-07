@@ -43,7 +43,7 @@
 
   <!-- Logout Button -->
   <div class="mt-10 flex justify-center">
-    <a href="${pageContext.request.contextPath}/logout"
+    <a href="${pageContext.request.contextPath}/user?action=logout"
        class="bg-red-500 text-white px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300">
       Logout
     </a>

@@ -1,16 +1,8 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: Bassam
-  Date: 12/7/2024
-  Time: 8:53 PM
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page isErrorPage="true" %>
 <html>
-  <head>
-    <title>$Title$</title>
-  </head>
-  <body>
-  $END$
-  </body>
+<head><title>Error</title></head>
+<body>
+<h1>An error occurred</h1>
+<p>${exception}</p>
+</body>
 </html>

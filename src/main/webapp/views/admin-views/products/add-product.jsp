@@ -1,4 +1,4 @@
-<%@include file="../admin-views/static/admin-sidebar.jsp"%>
+<%@include file="../static/admin-sidebar.jsp"%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -17,7 +17,7 @@
     </div>
 
     <!-- Form -->
-    <form action="${pageContext.request.contextPath}/product?action=add" method="post"
+    <form action="${pageContext.request.contextPath}/product?action=add" method="post" enctype="multipart/form-data"
           class="bg-white shadow-md rounded-lg p-8 space-y-6">
         <!-- Name -->
         <div>
@@ -40,6 +40,20 @@
                    class="w-full border border-gray-300 px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
         </div>
 
+        <!-- Stock -->
+        <div>
+            <label for="stock" class="block text-gray-700 font-semibold mb-2">Stock</label>
+            <input type="number" id="stock" name="stock" placeholder="Enter product stock"
+                   class="w-full border border-gray-300 px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        </div>
+
+        <!-- Image -->
+        <div>
+            <label for="image" class="block text-gray-700 font-semibold mb-2">Image</label>
+            <input type="file" id="image" name="image" accept="image/*"
+                   class="w-full border border-gray-300 px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        </div>
+
         <!-- Submit Button -->
         <div class="text-right">
             <button type="submit"
@@ -49,5 +63,6 @@
         </div>
     </form>
 </div>
+<%@include file="../static/admin-footer.jsp"%>
 </body>
 </html>
