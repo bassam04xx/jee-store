@@ -38,6 +38,12 @@ public class UserController extends HttpServlet {
             case "add":
                 handleAddUser(request, response);
                 break;
+            case "edit":
+                handleEditUser(request, response);
+                break;
+            case "delete":
+                handleDeleteUser(request, response);
+                break;
 
 
             default:
@@ -46,6 +52,91 @@ public class UserController extends HttpServlet {
                 break;
         }
     }
+
+    private void handleEditUser(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        // Retrieve and validate the user ID
+        String idParam = request.getParameter("id");
+
+        if (idParam == null || idParam.trim().isEmpty()) {
+            request.setAttribute("error", "Invalid user ID.");
+            request.getRequestDispatcher("/views/admin-views/index.jsp").forward(request, response);
+            return;
+        }
+
+        try {
+            int userId = Integer.parseInt(idParam);
+            User existingUser = userDAO.getUserById(userId);
+
+            if (existingUser != null) {
+                // Update user details from form input
+                existingUser.setUsername(request.getParameter("username"));
+                existingUser.setFullName(request.getParameter("fullName"));
+
+                String password = request.getParameter("password");
+                if (password != null && !password.trim().isEmpty()) {
+                    existingUser.setPassword(password); // Ensure password hashing is handled in DAO
+                }
+
+                existingUser.setType(request.getParameter("type"));
+
+                // Handle status only if user type is client
+                String type = request.getParameter("type");
+                if ("client".equalsIgnoreCase(type)) {
+                    existingUser.setStatus(request.getParameter("status"));
+                } else {
+                    existingUser.setStatus(null);
+                }
+
+                boolean isUpdated = userDAO.updateUser(existingUser);
+                if (isUpdated) {
+                    response.sendRedirect("user?action=list");
+                } else {
+                    request.setAttribute("error", "Failed to update the user.");
+                    request.getRequestDispatcher("/views/admin-views/users/edit-user.jsp").forward(request, response);
+                }
+            } else {
+                request.setAttribute("error", "User not found.");
+                request.getRequestDispatcher("/views/admin-views/index.jsp").forward(request, response);
+            }
+        } catch (NumberFormatException e) {
+            request.setAttribute("error", "Invalid user ID format.");
+            request.getRequestDispatcher("/views/admin-views/index.jsp").forward(request, response);
+        }
+    }
+
+    private void handleDeleteUser(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        // Retrieve and validate the user ID
+        String idParam = request.getParameter("id");
+
+        if (idParam == null || idParam.trim().isEmpty()) {
+            request.setAttribute("error", "Invalid user ID.");
+            request.getRequestDispatcher("/views/admin-views/index.jsp").forward(request, response);
+            return;
+        }
+
+        try {
+            int userId = Integer.parseInt(idParam);
+            User existingUser = userDAO.getUserById(userId);
+
+            if (existingUser != null) {
+                boolean isDeleted = userDAO.deleteUser(userId);
+
+                if (isDeleted) {
+                    response.sendRedirect("user?action=list");
+                } else {
+                    request.setAttribute("error", "Failed to delete the user.");
+                    request.getRequestDispatcher("/views/admin-views/users/edit-user.jsp").forward(request, response);
+                }
+            } else {
+                request.setAttribute("error", "User not found.");
+                request.getRequestDispatcher("/views/admin-views/index.jsp").forward(request, response);
+            }
+        } catch (NumberFormatException e) {
+            request.setAttribute("error", "Invalid user ID format.");
+            request.getRequestDispatcher("/views/admin-views/index.jsp").forward(request, response);
+        }
+    }
+
     private void handleAddUser(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String username = request.getParameter("username");
         String fullName = request.getParameter("fullName");
@@ -163,6 +254,13 @@ public class UserController extends HttpServlet {
             case "logout":
                 handleLogout(request, response);
                 break;
+                case "edit":
+                handleEditUser(request, response);
+                break;
+                case "delete":
+                handleDeleteUser(request, response);
+                break;
+
             default:
                 response.sendRedirect("error.jsp");
                 break;
