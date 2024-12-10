@@ -25,6 +25,7 @@
   List<User> users = (List<User>) session.getAttribute("users");
 
 
+
   // Redirect to fetch users if not present
   if (users == null) {
     response.sendRedirect(request.getContextPath() + "/user?action=list");

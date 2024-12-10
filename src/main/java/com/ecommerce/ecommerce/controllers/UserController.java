@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import javax.imageio.metadata.IIOMetadataNode;
 import java.io.IOException;
 import java.util.List;
 
@@ -89,6 +90,8 @@ public class UserController extends HttpServlet {
 
                 boolean isUpdated = userDAO.updateUser(existingUser);
                 if (isUpdated) {
+                    HttpSession session = request.getSession();
+                    session.removeAttribute("users");
                     response.sendRedirect("user?action=list");
                 } else {
                     request.setAttribute("error", "Failed to update the user.");
@@ -255,7 +258,25 @@ public class UserController extends HttpServlet {
                 handleLogout(request, response);
                 break;
                 case "edit":
-                handleEditUser(request, response);
+                    String idParam = request.getParameter("id");
+
+
+                    try {
+                        int userId = Integer.parseInt(idParam);
+                        User existingUser = userDAO.getUserById(userId);
+
+                        if (existingUser != null) {
+                            request.setAttribute("user", existingUser);
+                            request.getRequestDispatcher("/views/admin-views/users/edit-user.jsp").forward(request, response);
+                        } else {
+                            request.setAttribute("error", "User not found.");
+                            request.getRequestDispatcher("/views/admin-views/index.jsp").forward(request, response);
+                        }
+                        break;
+                    } catch (NumberFormatException e) {
+                        request.setAttribute("error", "Invalid user ID format.");
+                        request.getRequestDispatcher("/views/admin-views/index.jsp").forward(request, response);
+                    }
                 break;
                 case "delete":
                 handleDeleteUser(request, response);
