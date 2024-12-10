@@ -6,13 +6,11 @@ import com.ecommerce.ecommerce.models.Product;
 import com.ecommerce.ecommerce.models.User;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import javax.imageio.metadata.IIOMetadataNode;
 import java.io.IOException;
 import java.util.List;
 
@@ -228,6 +226,7 @@ public class UserController extends HttpServlet {
         if (user != null) {
             HttpSession session = request.getSession();
             session.setAttribute("currentUser", user);
+
             System.out.println("User logged in: " + user);
             String path = request.getContextPath();
             // Redirect based on user role

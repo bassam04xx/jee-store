@@ -1,89 +1,180 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.ecommerce.ecommerce.dao.ProductDAO" %>
 <%@ page import="com.ecommerce.ecommerce.models.Product" %>
 <%@ page import="java.util.List" %>
+<%@ page import="com.ecommerce.ecommerce.models.OrderDetails" %>
+<%@ page import="com.ecommerce.ecommerce.models.CartItem" %>
 <%@ page import="java.util.ArrayList" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+  String productIdParam = request.getParameter("id");
+  Product product = null;
+
+  // Check if the cart is initialized in the session
+  if (session.getAttribute("cart") == null) {
+    ArrayList<CartItem> cartItems = new ArrayList<>();
+    session.setAttribute("cart", cartItems); // Initialize cart in session if not already initialized
+  }
+
+  // Fetch product by ID
+  if (productIdParam != null) {
+    try {
+      int productId = Integer.parseInt(productIdParam);
+      ProductDAO productDAO = new ProductDAO();
+      product = productDAO.getProductById(productId);
+    } catch (NumberFormatException e) {
+      // Handle invalid product ID format
+    }
+  }
+%>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Product Details</title>
-  <!-- Add Tailwind CSS via CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <script>
-    // Automatically submit the form after a short delay to fetch related products
-    window.onload = function() {
-      document.getElementById("related-products-form").submit();
-    };
-  </script>
+  <title>Product Details - J-Store</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body class="bg-gray-100 text-gray-900">
-
-<div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-10">
-  <h1 class="text-3xl font-semibold text-center mb-6">Product Details</h1>
-
-  <%
-    // Fetch the product object passed from the controller
-    Product product = (Product) request.getAttribute("product");
-    if (product != null) {
-  %>
-
-  <!-- Product Info Section -->
-  <div class="flex flex-col md:flex-row items-center">
-    <img class="w-full md:w-1/2 rounded-lg shadow-lg mb-6 md:mb-0" src="<%= request.getContextPath() + "/uploads/" + product.getImage() %>" alt="<%= product.getName() %> image" />
-    <div class="md:ml-8 text-center md:text-left">
-      <h2 class="text-2xl font-semibold mb-2"><%= product.getName() %></h2>
-      <p class="text-gray-700 mb-4"><strong>Description:</strong> <%= product.getDescription() %></p>
-      <p class="text-xl font-bold text-green-600 mb-4"><strong>Price:</strong> $<%= product.getPrice() %></p>
-      <p class="text-sm text-gray-600 mb-6"><strong>Stock:</strong> <%= product.getStock() %> items available</p>
-
-      <!-- Add to Cart Button -->
-      <button class="bg-green-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 mb-6">
-        Add to Cart
-      </button>
-
-      <!-- Back Button -->
-      <a href="<%= request.getContextPath() + "/product?action=list" %>"
-         class="bg-blue-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-300">
-        Back to Product List
-      </a>
+<!-- Navbar -->
+<nav class="bg-gradient-to-r from-blue-900 to-blue-600 p-4">
+  <div class="container mx-auto flex justify-between items-center">
+    <div class="text-white text-2xl font-bold">
+      J-Store
+    </div>
+    <div>
+      <a href="<%= request.getContextPath() %>/cart" class="text-white hover:text-blue-200 mx-2">Cart <i class="fas fa-shopping-cart"></i></a>
+      <a href="<%= request.getContextPath() %>/logout" class="text-white hover:text-blue-200 mx-2">Logout</a>
     </div>
   </div>
+</nav>
 
-  <hr class="my-8 border-gray-300">
-
-  <!-- Hidden Form to Fetch Related Products -->
-
-  <!-- Related Products Section -->
-  <h2 class="text-2xl font-semibold text-center mb-6">You May Also Like</h2>
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-    <%
-      // Simulate fetching related products (replace with actual data fetch)
-      List<Product> relatedProducts = new ArrayList<>(); // Assuming you fetch related products here
-      for (Product relatedProduct : relatedProducts) {
-    %>
-    <div class="bg-white rounded-lg shadow-lg p-4">
-      <img class="w-full h-48 object-cover rounded-lg mb-4" src="<%= request.getContextPath() + "/uploads/" + relatedProduct.getImage() %>" alt="<%= relatedProduct.getName() %> image" />
-      <h3 class="text-lg font-semibold text-gray-800 mb-2"><%= relatedProduct.getName() %></h3>
-      <p class="text-gray-700 mb-4"><%= relatedProduct.getDescription() %></p>
-      <p class="text-xl font-bold text-green-600 mb-4">$<%= relatedProduct.getPrice() %></p>
-      <a href="<%= request.getContextPath() + "/product?action=view&id=" + relatedProduct.getId() %>"
-         class="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-300 w-full text-center">
-        View Details
-      </a>
+<!-- Main Content -->
+<main class="container mx-auto py-12">
+  <% if (product != null) { %>
+  <div class="flex flex-col md:flex-row bg-white shadow-lg rounded-lg overflow-hidden">
+    <div class="md:w-1/2">
+      <img src="<%= request.getContextPath() + "/uploads/" + product.getImage() %>" alt="<%= product.getName() %>" class="w-full h-full object-cover">
     </div>
-    <% } %>
+    <div class="md:w-1/2 p-8">
+      <h2 class="text-4xl font-bold text-gray-800"><%= product.getName() %></h2>
+      <p class="text-gray-600 mt-4"><%= product.getDescription() %></p>
+      <div class="text-2xl text-gray-800 font-bold mt-5">$<%= product.getPrice() %></div>
+      <!-- Counter Section -->
+      <div class="mt-6 flex items-center">
+        <button id="decreaseQuantity" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-l hover:bg-gray-400 focus:outline-none">
+          -
+        </button>
+        <input
+                id="quantity"
+                type="number"
+                value="1"
+                min="1"
+                max="<%= product.getStock() %>"
+                readonly
+                class="w-12 text-center border-t border-b border-gray-300 focus:outline-none">
+        <button id="increaseQuantity" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-r hover:bg-gray-400 focus:outline-none">
+          +
+        </button>
+        <p class="ml-4 text-sm text-gray-600">Stock: <%= product.getStock() %></p>
+      </div>
+
+      <div class="flex items-center mt-6">
+        <button id="addToCart" onclick="
+          <%
+            // Retrieve cart from session
+            List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
+            boolean found = false;
+            // Loop through the cart to check if the product is already there
+            for (CartItem item : cart) {
+                if (item.getProductId() == product.getId()) {
+                    item.setQuantity(item.getQuantity() + 1); // Increment quantity
+                    found = true;
+                    break;
+                }
+            }
+            // If not found, add new item to the cart
+            if (!found) {
+                cart.add(new CartItem(product.getId(), 1));
+            }
+            session.setAttribute("cart", cart); // Save updated cart in session
+          %>" class="flex items-center justify-center bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none mr-4">
+          <i class="fas fa-cart-plus mr-2"></i>Add to Cart
+        </button>
+        <a href="<%= request.getContextPath() %>/views/user-views/index.jsp" class="flex items-center justify-center bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-green-600 focus:ring-2 focus:ring-green-500 focus:outline-none">
+          <i class="fas fa-arrow-left mr-2"></i>Continue Shopping
+        </a>
+      </div>
+      <hr class="my-8">
+    </div>
   </div>
+  <% } else { %>
+  <p class="text-gray-600 text-center mt-16">Product not found.</p>
+  <% } %>
+</main>
 
-  <%
-  } else {
-  %>
-  <p class="text-center text-red-500">Product not found.</p>
-  <%
-    }
-  %>
+<!-- Footer -->
+<footer class="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-4 mt-12">
+  <div class="container mx-auto text-center">
+    <p>&copy; 2024 J-Store. All rights reserved.</p>
+  </div>
+</footer>
 
-</div>
+<!-- JavaScript -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const quantityInput = document.getElementById('quantity');
+    const decreaseButton = document.getElementById('decreaseQuantity');
+    const increaseButton = document.getElementById('increaseQuantity');
+    const addToCartButton = document.getElementById('addToCart');
 
+    const maxStock = parseInt(quantityInput.getAttribute('max'), 10);
+
+    // Quantity increment and decrement logic
+    decreaseButton.addEventListener('click', () => {
+      const currentValue = parseInt(quantityInput.value, 10);
+      if (currentValue > 1) {
+        quantityInput.value = currentValue - 1;
+      }
+    });
+
+    increaseButton.addEventListener('click', () => {
+      const currentValue = parseInt(quantityInput.value, 10);
+      if (currentValue < maxStock) {
+        quantityInput.value = currentValue + 1;
+      }
+    });
+
+    // Add to Cart functionality
+    addToCartButton.addEventListener('click', () => {
+      // Retrieve product details
+      const productId = '<%= product.getId() %>'; // Dynamically set the product ID
+      const productName = '<%= product.getName() %>';
+      const productPrice = parseFloat('<%= product.getPrice() %>');
+      const quantity = parseInt(quantityInput.value, 10);
+
+      // Get current cart from localStorage or initialize it
+      let cart = JSON.parse(localStorage.getItem('current-order')) || [];
+
+      // Check if product is already in the cart
+      const productIndex = cart.findIndex(item => item.id === productId);
+
+      if (productIndex !== -1) {
+        // Update quantity for existing product
+        cart[productIndex].quantity += quantity;
+      } else {
+        // Add new product with specified quantity
+        cart.push({ id: productId, name: productName, price: productPrice, quantity: quantity });
+      }
+
+      // Save the updated cart to localStorage
+      localStorage.setItem('current-order', JSON.stringify(cart));
+
+      // Provide feedback to the user
+      alert(`${quantity} x ${productName} added to the cart.`);
+    });
+  });
+</script>
 </body>
 </html>

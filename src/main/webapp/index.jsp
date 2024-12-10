@@ -1,61 +1,112 @@
-<%@ page import="com.ecommerce.ecommerce.models.Product" %>
-<%@ page import="java.util.List" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ page contentType="text/html;charset=UTF-8" %>
-<%@ include file="/views/admin-views/static/admin-sidebar.jsp" %>
-<% if(request.getAttribute("products")==null){
-    response.sendRedirect(request.getContextPath() + "/product?action=list");
-} %>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Products</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>J-Store - Welcome</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-<body class="bg-gray-100 text-gray-800">
-<div class="container mx-auto mt-10">
-    <!-- Page Header -->
-    <div class="flex items-center justify-between mb-6">
-        <h1 class="text-3xl font-bold text-gray-700">Product List</h1>
-        <a href="${pageContext.request.contextPath}/product?action=add"
-           class="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-5 py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300">
-            + Add Product
+<body class="bg-white">
+
+<!-- Navbar -->
+<nav class="bg-gradient-to-r from-blue-900 to-blue-600 p-4">
+    <div class="container mx-auto flex justify-between items-center">
+        <div class="text-white text-2xl font-bold">
+            J-Store
+        </div>
+        <div>
+            <a href="<c:url value='/views/signup.jsp' />" class="text-white hover:text-blue-200 mx-2">Sign Up</a>
+            <a href="<c:url value='/views/login.jsp' />" class="text-white hover:text-blue-200 mx-2">Sign In</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Welcome Banner -->
+<section class="bg-gradient-to-r from-blue-100 to-white py-20">
+    <div class="container mx-auto text-center">
+        <h1 class="text-5xl font-extrabold text-gray-800">Welcome to J-Store</h1>
+        <p class="text-gray-600 mt-4 text-lg">Your portal to a futuristic shopping experience</p>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="bg-white py-20">
+    <div class="container mx-auto text-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">Why Shop with Us?</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-yellow-50 shadow-lg rounded-lg p-6 flex flex-col items-center">
+                <i class="fas fa-gem text-blue-600 text-4xl mb-4"></i>
+                <h3 class="text-xl font-semibold text-blue-600">Exclusive Products</h3>
+                <p class="text-gray-600 mt-2">Discover unique items curated just for you.</p>
+            </div>
+            <div class="bg-yellow-50 shadow-lg rounded-lg p-6 flex flex-col items-center">
+                <i class="fas fa-shipping-fast text-blue-600 text-4xl mb-4"></i>
+                <h3 class="text-xl font-semibold text-blue-600">Fast Delivery</h3>
+                <p class="text-gray-600 mt-2">Experience speedy and reliable delivery services.</p>
+            </div>
+            <div class="bg-yellow-50 shadow-lg rounded-lg p-6 flex flex-col items-center">
+                <i class="fas fa-headset text-blue-600 text-4xl mb-4"></i>
+                <h3 class="text-xl font-semibold text-blue-600">24/7 Customer Support</h3>
+                <p class="text-gray-600 mt-2">We're here to help around the clock.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Trending Products Section -->
+<section class="bg-gradient-to-r from-green-50 to-green-100 py-20">
+    <div class="container mx-auto text-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">Trending Products</h2>
+        <p class="text-gray-600 mb-8">Catch up with the latest and greatest in our catalog.</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Add product cards here -->
+            <div class="bg-white shadow-lg rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-blue-600">Product Name</h3>
+                <p class="text-gray-600 mt-2">Brief product description goes here.</p>
+            </div>
+            <!-- Repeat similar blocks for more products -->
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="bg-gradient-to-r from-purple-50 to-purple-100 py-20">
+    <div class="container mx-auto text-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">What Our Customers Say</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white shadow-lg rounded-lg p-6">
+                <p class="text-gray-800 italic">"An amazing shopping experience with timely delivery!"</p>
+                <p class="text-gray-600 mt-2">- Customer Name</p>
+            </div>
+            <div class="bg-white shadow-lg rounded-lg p-6">
+                <p class="text-gray-800 italic">"Wide range of products with excellent quality."</p>
+                <p class="text-gray-600 mt-2">- Customer Name</p>
+            </div>
+            <div class="bg-white shadow-lg rounded-lg p-6">
+                <p class="text-gray-800 italic">"Outstanding customer support and service."</p>
+                <p class="text-gray-600 mt-2">- Customer Name</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="bg-gradient-to-r from-green-400 to-blue-500 py-20">
+    <div class="container mx-auto text-center text-white">
+        <h2 class="text-3xl font-bold mb-4">Join Us Today!</h2>
+        <p class="mb-6">Become a part of our community and start exploring now.</p>
+        <a href="<c:url value='/views/signup.jsp' />" class="bg-white text-blue-600 font-semibold py-2 px-4 rounded hover:bg-blue-100">
+            Sign Up Now
         </a>
     </div>
+</section>
 
-    <!-- Product Table -->
-    <div class="bg-white shadow-md rounded-lg overflow-hidden">
-        <table class="min-w-full border-collapse border border-gray-300">
-            <thead class="bg-gradient-to-r from-gray-200 to-gray-300">
-            <tr>
-                <th class="border px-6 py-4 text-left font-semibold text-gray-700">ID</th>
-                <th class="border px-6 py-4 text-left font-semibold text-gray-700">Name</th>
-                <th class="border px-6 py-4 text-left font-semibold text-gray-700">Description</th>
-                <th class="border px-6 py-4 text-left font-semibold text-gray-700">Price</th>
-                <th class="border px-6 py-4 text-center font-semibold text-gray-700">Actions</th>
-            </tr>
-            </thead>
-            <tbody class="bg-white">
-            <c:forEach var="product" items="${products}">
-                <tr class="hover:bg-gray-100 transition duration-200">
-                    <td class="border px-6 py-4 text-gray-600">${product.id}</td>
-                    <td class="border px-6 py-4 text-gray-600">${product.name}</td>
-                    <td class="border px-6 py-4 text-gray-600">${product.description}</td>
-                    <td class="border px-6 py-4 text-gray-600">${product.price}</td>
-                    <td class="border px-6 py-4 text-center">
-                        <a href="${pageContext.request.contextPath}/product?action=edit&id=${product.id}"
-                           class="text-blue-600 hover:text-blue-800 mx-2">Edit</a>
-                        <a href="${pageContext.request.contextPath}/product?action=delete&id=${product.id}"
-                           class="text-red-600 hover:text-red-800 mx-2">Delete</a>
-                    </td>
-                </tr>
-            </c:forEach>
-            </tbody>
-        </table>
-    </div>
-</div>
+<!-- Footer -->
+<footer class="bg-gradient-to-r from-blue-900 to-blue-600 p-4 text-center text-white">
+    &copy; 2023 J-Store. All Rights Reserved.
+</footer>
+
 </body>
 </html>
-
