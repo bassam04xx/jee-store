@@ -1,6 +1,8 @@
 package com.ecommerce.ecommerce.controllers;
 
+import com.ecommerce.ecommerce.dao.CategoryDAO;
 import com.ecommerce.ecommerce.dao.ProductDAO;
+import com.ecommerce.ecommerce.models.Category;
 import com.ecommerce.ecommerce.models.Product;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
@@ -26,6 +28,15 @@ public class ProductController extends HttpServlet {
         switch (action) {
             case "add":
                 // Forward to the Add Product page
+                CategoryDAO categoryDAO = new CategoryDAO();
+                try {
+                    List<Category> categories = categoryDAO.getAllCategories();
+                    System.out.println("Categories: " + categories);
+                    request.setAttribute("categories", categories);
+                } catch (Exception e) {
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to fetch categories");
+                }
+
                 request.getRequestDispatcher("/views/admin-views/products/add-product.jsp").forward(request, response);
                 break;
 
@@ -127,7 +138,7 @@ public class ProductController extends HttpServlet {
 
             // Get the path to store the image in the uploads folder
             // Ensure the upload directory exists
-            String uploadDirPath = "C:\\Users\\Bassam\\Desktop\\JEE\\ecommerce\\uploads";  // Update to your preferred location
+            String uploadDirPath = getServletContext().getRealPath("/uploads");
             File uploadDir = new File(uploadDirPath);
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
@@ -147,7 +158,6 @@ public class ProductController extends HttpServlet {
             Product product = new Product();
             product.setName(request.getParameter("name"));
             product.setDescription(request.getParameter("description"));
-
             // Handle price
             String priceParam = request.getParameter("price");
             if (priceParam != null && !priceParam.trim().isEmpty()) {
@@ -167,7 +177,10 @@ public class ProductController extends HttpServlet {
             // Set the image file name or relative path (relative to the web root)
             product.setImage(fileName); // Store the relative path to the image in the database
             product.setStock(Integer.parseInt(request.getParameter("stock"))); // Set the stock value
+            System.out.println("Selected category ID: " + request.getParameter("category"));
 
+            // Handle category
+            product.setCategory_id(Integer.parseInt(request.getParameter("category")));
             // Add the product to the database
             productDAO.addProduct(product);
 

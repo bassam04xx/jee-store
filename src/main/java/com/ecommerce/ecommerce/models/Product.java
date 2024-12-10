@@ -7,18 +7,20 @@ public class Product {
     private double price;
     private int stock;       // New field for stock
     private String image;    // New field for image
+    private int category_id;
 
     // Default Constructor
     public Product() {}
 
     // Parameterized Constructor
-    public Product(int id, String name, String description, double price, int stock, String image) {
+    public Product(int id, String name, String description, double price, int stock, String image, int category) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
         this.stock = stock;
         this.image = image;
+        this.category_id = category;
     }
 
     // Getters and Setters
@@ -39,4 +41,13 @@ public class Product {
 
     public String getImage() { return image; }       // Getter for image
     public void setImage(String image) { this.image = image; } // Setter for image
+
+
+    public int getCategory_id() {
+        return category_id;
+    }
+
+    public void setCategory_id(int category_id) {
+        this.category_id = category_id;
+    }
 }

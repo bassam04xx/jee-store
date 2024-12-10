@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="jee_store@localhost" uuid="75d7ada3-1574-441f-83df-5d42d3e7badd">
+    <data-source source="LOCAL" name="railway@autorack.proxy.rlwy.net" uuid="7843b275-b200-4061-84e8-169c9ee9932e">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://localhost:5432/jee_store</jdbc-url>
+      <jdbc-url>jdbc:postgresql://autorack.proxy.rlwy.net:45539/railway</jdbc-url>
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />

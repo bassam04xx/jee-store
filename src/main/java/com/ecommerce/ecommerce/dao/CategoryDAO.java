@@ -2,72 +2,105 @@ package com.ecommerce.ecommerce.dao;
 
 import com.ecommerce.ecommerce.models.Category;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import jakarta.transaction.Transactional;
+import static com.ecommerce.ecommerce.utils.DatabaseConnection.getConnection;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CategoryDAO {
+    public List<Category> getAllCategories() throws Exception {
+        List<Category> categories = new ArrayList<>();
+        String sql = "SELECT * FROM categories";
 
-    private static final String PERSISTENCE_UNIT_NAME = "ecommercePU";
-    private EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-
-    @Transactional
-    public void createCategory(Category category) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        try {
-            entityManager.getTransaction().begin();
-            entityManager.persist(category);
-            entityManager.getTransaction().commit();
-        } finally {
-            entityManager.close();
-        }
-    }
-
-    public Category findCategoryById(Long id) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        try {
-            return entityManager.find(Category.class, id);
-        } finally {
-            entityManager.close();
-        }
-    }
-
-    public List<Category> getAllCategories() {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        try {
-            return entityManager.createQuery("SELECT c FROM Category c", Category.class).getResultList();
-        } finally {
-            entityManager.close();
-        }
-    }
-
-    @Transactional
-    public void updateCategory(Category category) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        try {
-            entityManager.getTransaction().begin();
-            entityManager.merge(category);
-            entityManager.getTransaction().commit();
-        } finally {
-            entityManager.close();
-        }
-    }
-
-    @Transactional
-    public void deleteCategory(Long id) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        try {
-            entityManager.getTransaction().begin();
-            Category category = entityManager.find(Category.class, id);
-            if (category != null) {
-                entityManager.remove(category);
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                categories.add(new Category(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name")
+                ));
             }
-            entityManager.getTransaction().commit();
-        } finally {
-            entityManager.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
+        return categories;
+
     }
+
+    public boolean addCategory(Category category) throws Exception {
+        String sql = "INSERT INTO categories (name) VALUES (?)";
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, category.getName());
+            preparedStatement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+
+    public Category getCategoryById(int id) throws Exception {
+        String sql = "SELECT * FROM categories WHERE id = ?";
+        Category category = null;
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    category = new Category(
+                            resultSet.getInt("id"),
+                            resultSet.getString("name")
+                    );
+                }
+            }
+            return category;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return category;
+    }
+
+    public boolean updateCategory(Category category) throws Exception {
+        String sql = "UPDATE categories SET name = ? WHERE id = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, category.getName());
+            preparedStatement.setInt(2, category.getId());
+            preparedStatement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+
+    public boolean deleteCategory(int categoryId) throws Exception {
+        String query = "DELETE FROM categories WHERE id = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, categoryId);
+            preparedStatement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+
 }

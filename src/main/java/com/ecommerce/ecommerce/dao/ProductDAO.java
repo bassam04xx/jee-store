@@ -17,7 +17,7 @@ public class ProductDAO {
 
     public List<Product> getAllProducts() {
         List<Product> products = new ArrayList<>();
-        String sql = "SELECT * FROM product";
+        String sql = "SELECT * FROM products";
 
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -30,7 +30,8 @@ public class ProductDAO {
                         resultSet.getString("description"),
                         resultSet.getDouble("price"),
                         resultSet.getInt("stock"),
-                        resultSet.getString("image")
+                        resultSet.getString("image"),
+                        resultSet.getInt("category_id")
                 ));
             }
         } catch (SQLException e) {
@@ -43,7 +44,7 @@ public class ProductDAO {
     }
 
     public boolean addProduct(Product product) {
-        String sql = "INSERT INTO product (name, description, price, stock, image) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO products (name, description, price, stock, image, category_id) VALUES (?, ?, ?, ?, ?, ?)";
         String imagePath = product.getImage(); // Use the image path already set in the product object
 
         try (Connection connection = getConnection();
@@ -54,6 +55,7 @@ public class ProductDAO {
             preparedStatement.setDouble(3, product.getPrice());
             preparedStatement.setInt(4, product.getStock());
             preparedStatement.setString(5, imagePath); // Store the image path in DB
+            preparedStatement.setInt(6, product.getCategory_id());
             preparedStatement.executeUpdate();
             return true;
 
@@ -99,7 +101,7 @@ public class ProductDAO {
     }
 
     public Product getProductById(int id) {
-        String sql = "SELECT * FROM product WHERE id = ?";
+        String sql = "SELECT * FROM products WHERE id = ?";
         Product product = null;
 
         try (Connection connection = getConnection();
@@ -114,7 +116,8 @@ public class ProductDAO {
                             resultSet.getString("description"),
                             resultSet.getDouble("price"),
                             resultSet.getInt("stock"),
-                            resultSet.getString("image")
+                            resultSet.getString("image"),
+                            resultSet.getInt("category_id")
                     );
                 }
             }
@@ -128,7 +131,7 @@ public class ProductDAO {
     }
 
     public boolean updateProduct(Product updatedProduct) {
-        String sql = "UPDATE product SET name = ?, description = ?, price = ?, stock = ?, image = ? WHERE id = ?";
+        String sql = "UPDATE products SET name = ?, description = ?, price = ?, stock = ?, image = ?, category_id = ? WHERE id = ?";
 
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -139,6 +142,7 @@ public class ProductDAO {
             preparedStatement.setInt(4, updatedProduct.getStock());
             preparedStatement.setString(5, updatedProduct.getImage());
             preparedStatement.setInt(6, updatedProduct.getId());
+            preparedStatement.setInt(7, updatedProduct.getCategory_id());
             preparedStatement.executeUpdate();
             return true;
 
@@ -151,7 +155,7 @@ public class ProductDAO {
     }
 
     public boolean deleteProduct(int productId) {
-        String query = "DELETE FROM product WHERE id = ?";
+        String query = "DELETE FROM products WHERE id = ?";
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, productId);

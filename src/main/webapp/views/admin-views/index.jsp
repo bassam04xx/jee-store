@@ -1,6 +1,7 @@
 <%@ page import="com.ecommerce.ecommerce.models.Product" %>
 <%@ page import="com.ecommerce.ecommerce.models.User" %>
 <%@ page import="java.util.List" %>
+<%@ page import="com.ecommerce.ecommerce.models.Category" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="./static/admin-sidebar.jsp" %> <!-- Include Sidebar -->
 <!DOCTYPE html>
@@ -23,6 +24,7 @@
   // Get data from session
   List<Product> products = (List<Product>) session.getAttribute("products");
   List<User> users = (List<User>) session.getAttribute("users");
+  List<Category> categories = (List<Category>) session.getAttribute("categories");
 
 
 
@@ -68,8 +70,47 @@
             <td class="px-6 py-3">${product.price}</td>
             <td class="px-6 py-3">${product.stock}</td>
             <td class="px-6 py-3">
+              <img src="${pageContext.request.contextPath}/uploads/${product.image}" alt="${product.name}" class="w-32 h-32 object-cover rounded-md">
+            </td>
+            <td class="px-6 py-3">
               <a href="${pageContext.request.contextPath}/product?action=edit&id=${product.id}" class="text-blue-500 hover:text-blue-700 px-4 py-2 rounded-md">Edit</a>
               <a href="${pageContext.request.contextPath}/product?action=delete&id=${product.id}" class="text-red-500 hover:text-red-700 px-4 py-2 rounded-md">Delete</a>
+            </td>
+          </tr>
+        </c:forEach>
+        </tbody>
+      </table>
+    </c:if>
+
+    <!-- Category Management Section -->
+    <div class="mb-8 mt-10">
+      <h1 class="text-3xl font-bold text-gray-700">Category Management</h1>
+      <p class="text-gray-600 mt-2">Manage categories, edit, delete, or add new categories to your catalog.</p>
+    </div>
+
+    <!-- Add Category Button -->
+    <div class="mb-4 text-right">
+      <a href="${pageContext.request.contextPath}/category?action=add" class="bg-blue-500 text-white py-2 px-4 rounded-lg shadow-lg hover:bg-blue-600 transition duration-300">Add New Category</a>
+    </div>
+
+    <!-- Category Table -->
+    <c:if test="${!empty categories}">
+      <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
+        <thead>
+        <tr class="bg-gray-200 text-gray-700">
+          <th class="px-6 py-3 text-left">Category Name</th>
+          <th class="px-6 py-3 text-left">Description</th>
+          <th class="px-6 py-3 text-left">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <c:forEach var="category" items="${categories}">
+          <tr class="border-b hover:bg-gray-50">
+            <td class="px-6 py-3">${category.name}</td>
+            <td class="px-6 py-3">${category.description}</td>
+            <td class="px-6 py-3">
+              <a href="${pageContext.request.contextPath}/category?action=edit&id=${category.id}" class="text-blue-500 hover:text-blue-700 px-4 py-2 rounded-md">Edit</a>
+              <a href="${pageContext.request.contextPath}/category?action=delete&id=${category.id}" class="text-red-500 hover:text-red-700 px-4 py-2 rounded-md">Delete</a>
             </td>
           </tr>
         </c:forEach>

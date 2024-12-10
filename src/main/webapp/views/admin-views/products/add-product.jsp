@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@include file="../static/admin-sidebar.jsp"%>
 
 <!DOCTYPE html>
@@ -53,6 +54,18 @@
             <input type="file" id="image" name="image" accept="image/*"
                    class="w-full border border-gray-300 px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
         </div>
+
+        <!-- Category -->
+        <div>
+            <label for="category" class="block text-gray-700 font-semibold mb-2">Category</label>
+            <select id="category" name="category" required
+                    class="w-full border border-gray-300 px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                <c:forEach var="category" items="${categories}">
+                    <option value="${category.id}">${category.name}</option>
+                </c:forEach>
+            </select>
+        </div>
+
 
         <!-- Submit Button -->
         <div class="text-right">
