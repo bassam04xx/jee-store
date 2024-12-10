@@ -1,58 +1,51 @@
 package com.ecommerce.ecommerce.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import java.util.List;
+import java.util.Date;
 
-@Entity
 public class Order {
+    private int id;
+    private int userId;      // User ID who made the order
+    private Date date;       // Date of order creation
+    private String status;   // Status of the order (e.g., PENDING, SHIPPED, etc.)
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    // Default Constructor
+    public Order() {}
 
-    @ManyToOne
-    private User user;
-
-    private Double totalPrice;
-
-    @OneToMany(mappedBy = "order")
-    private List<OrderItem> orderItems;
-
-    // Getters and Setters
-    public Long getId() {
-        return id;
+    // Parameterized Constructor
+    public Order(int id, int userId, Date date, String status) {
+        this.id = id;
+        this.userId = userId;
+        this.date = date;
+        this.status = status;
     }
 
-    public void setId(Long id) {
+    // Getters and Setters
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public int getUserId() {
+        return userId;
+    }
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+
+    public Date getDate() {
+        return date;
+    }
+    public void setDate(Date date) {
+        this.date = date;
     }
 
-    public Double getTotalPrice() {
-        return totalPrice;
+    public String getStatus() {
+        return status;
     }
-
-    public void setTotalPrice(Double totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
-    public List<OrderItem> getOrderItems() {
-        return orderItems;
-    }
-
-    public void setOrderItems(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
