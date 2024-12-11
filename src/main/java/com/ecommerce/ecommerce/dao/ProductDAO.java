@@ -68,25 +68,25 @@ public class ProductDAO {
         return false;
     }
 
-    private String saveImage(Part imagePart, ServletContext context) {
-        String uploadDir = context.getRealPath("/webapp/uploads"); // Use the path relative to the web root
-        File uploadDirFile = new File(uploadDir);
-
-        if (!uploadDirFile.exists()) {
-            uploadDirFile.mkdirs(); // Create the directory if it doesn't exist
-        }
-
-        String fileName = extractFileName(imagePart);
-        String imagePath = uploadDir + File.separator + fileName;
-
-        try {
-            imagePart.write(imagePath); // Save the file to disk
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return "webapp/uploads/" + fileName; // Return relative path to store in the DB
-    }
+//    private String saveImage(Part imagePart, ServletContext context) {
+//        String uploadDir = context.getRealPath("/uploads"); // Correct the path here
+//        File uploadDirFile = new File(uploadDir);
+//
+//        if (!uploadDirFile.exists()) {
+//            uploadDirFile.mkdirs(); // Create the directory if it doesn't exist
+//        }
+//
+//        String fileName = extractFileName(imagePart);
+//        String imagePath = uploadDir + File.separator + fileName;
+//
+//        try {
+//            imagePart.write(imagePath); // Save the file to disk
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return "webapp/uploads/" + fileName; // Return relative path to store in the DB
+//    }
 
     private String extractFileName(Part part) {
         String contentDisposition = part.getHeader("content-disposition");

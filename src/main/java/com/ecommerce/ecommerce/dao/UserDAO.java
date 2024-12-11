@@ -23,8 +23,9 @@ public class UserDAO {
             while (resultSet.next()) {
                 users.add(new User(
                         resultSet.getInt("id"),
-                        resultSet.getString("username"),
                         resultSet.getString("full_name"),
+                        resultSet.getString("username"),
+                        resultSet.getString("email"),
                         resultSet.getString("password"),
                         resultSet.getString("type"),
                         resultSet.getString("status")
@@ -82,8 +83,9 @@ public class UserDAO {
                 if (resultSet.next()) {
                     user = new User(
                             resultSet.getInt("id"),
-                            resultSet.getString("username"),
                             resultSet.getString("full_name"),
+                            resultSet.getString("username"),
+                            resultSet.getString("email"),
                             resultSet.getString("password"),
                             resultSet.getString("type"),
                             resultSet.getString("status")
@@ -146,15 +148,16 @@ public class UserDAO {
     }
 
     // Sign Up
-    public boolean signup(String username, String password, String fullName) {
-        String sql = "INSERT INTO users (username, password, full_name, type, status) VALUES (?, ?, ?, 'client', 'active')";
+    public boolean signup(String fullName, String username, String email, String password) {
+        String sql = "INSERT INTO users (full_name, username, email, password, type, status) VALUES (?, ?, ?, ?, 'client', 'active')";
 
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            preparedStatement.setString(1, username);
-            preparedStatement.setString(2, password);
-            preparedStatement.setString(3, fullName);
+            preparedStatement.setString(1, fullName);
+            preparedStatement.setString(2, username);
+            preparedStatement.setString(3, email);
+            preparedStatement.setString(4, password);
             preparedStatement.executeUpdate();
             return true;
 
@@ -185,8 +188,9 @@ public class UserDAO {
                 if (resultSet.next()) {
                     user = new User(
                             resultSet.getInt("id"),
-                            resultSet.getString("username"),
                             resultSet.getString("full_name"),
+                            resultSet.getString("username"),
+                            resultSet.getString("email"),
                             resultSet.getString("password"),
                             resultSet.getString("type"),
                             resultSet.getString("status")

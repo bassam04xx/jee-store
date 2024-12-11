@@ -2,20 +2,29 @@ package com.ecommerce.ecommerce.models;
 
 public class User {
     private int id;
-    private String username;
     private String fullName;
+    private String username;
+    private String email;
     private String password;
     private String type; // "client" or "admin"
     private String status; // "active" or "banned", only for clients
 
     // Default Constructor
-    public User() {}
-
-    // Parameterized Constructor
-    public User(int id, String username, String fullName, String password, String type, String status) {
-        this.id = id;
+    public User( String fullName,String username,String email,String password,String type,String status) {
         this.username = username;
         this.fullName = fullName;
+        this.email = email;
+        this.password = password;
+        this.type = type;
+        this.status = status;
+    }
+
+    // Parameterized Constructor
+    public User(int id, String fullName,String username,String email,String password,String type,String status) {
+        this.id = id;
+        this.fullName = fullName;
+        this.username = username;
+        this.email = email;
         this.password = password;
         this.type = type;
 
@@ -57,5 +66,13 @@ public class User {
         } else {
             this.status = null; // Admins have no status
         }
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

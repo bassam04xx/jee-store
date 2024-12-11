@@ -68,9 +68,9 @@ public class UserController extends HttpServlet {
 
             if (existingUser != null) {
                 // Update user details from form input
-                existingUser.setUsername(request.getParameter("username"));
                 existingUser.setFullName(request.getParameter("fullName"));
-
+                existingUser.setUsername(request.getParameter("username"));
+                existingUser.setPassword(request.getParameter("email"));
                 String password = request.getParameter("password");
                 if (password != null && !password.trim().isEmpty()) {
                     existingUser.setPassword(password); // Ensure password hashing is handled in DAO
@@ -139,8 +139,9 @@ public class UserController extends HttpServlet {
     }
 
     private void handleAddUser(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String username = request.getParameter("username");
         String fullName = request.getParameter("fullName");
+        String username = request.getParameter("username");
+        String email = request.getParameter("email");
         String password = request.getParameter("password");
         String type = request.getParameter("type");
         String status = request.getParameter("status");
@@ -150,7 +151,7 @@ public class UserController extends HttpServlet {
             status = null;
         }
 
-        User user = new User(0, username, fullName, password, type, status);
+        User user = new User (username, fullName,email ,password, type, status);
         boolean isSuccess = userDAO.addUser(user);
 
         if (isSuccess) {
@@ -199,11 +200,12 @@ public class UserController extends HttpServlet {
     }
 
     private void handleSignup(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
         String fullName = request.getParameter("fullName");
+        String username = request.getParameter("username");
+        String email = request.getParameter("email");
+        String password = request.getParameter("password");
 
-        boolean isSuccess = userDAO.signup(username, password, fullName);
+        boolean isSuccess = userDAO.signup(fullName, username, email, password);
 
         if (isSuccess) {
             request.setAttribute("message", "Signup successful! Please log in.");
