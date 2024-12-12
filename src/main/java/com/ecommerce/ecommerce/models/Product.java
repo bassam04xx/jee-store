@@ -6,14 +6,16 @@ public class Product {
     private String description;
     private double price;
     private int stock;       // New field for stock
-    private String image;    // New field for image
+    private byte[] image; // Updated to store image as blob
     private int category_id;
+    private String imageBase64;
+
 
     // Default Constructor
     public Product() {}
 
     // Parameterized Constructor
-    public Product(int id, String name, String description, double price, int stock, String image, int category) {
+    public Product(int id, String name, String description, double price, int stock, byte[] image, int category) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -21,6 +23,7 @@ public class Product {
         this.stock = stock;
         this.image = image;
         this.category_id = category;
+
     }
 
     // Getters and Setters
@@ -39,8 +42,6 @@ public class Product {
     public int getStock() { return stock; }           // Getter for stock
     public void setStock(int stock) { this.stock = stock; } // Setter for stock
 
-    public String getImage() { return image; }       // Getter for image
-    public void setImage(String image) { this.image = image; } // Setter for image
 
 
     public int getCategory_id() {
@@ -49,5 +50,21 @@ public class Product {
 
     public void setCategory_id(int category_id) {
         this.category_id = category_id;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+
+    public String getImageBase64() {
+        return imageBase64;
+    }
+
+    public void setImageBase64(String imageBase64) {
+        this.imageBase64 = imageBase64;
     }
 }

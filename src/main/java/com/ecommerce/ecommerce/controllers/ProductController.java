@@ -9,6 +9,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @WebServlet("/product")
@@ -131,124 +132,115 @@ public class ProductController extends HttpServlet {
         protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
             String action = request.getParameter("action");
 
-            if ("add".equals(action)) {
-                // Handle file upload for image
-                Part filePart = request.getPart("image"); // The name attribute from the form
-                String fileName = extractFileName(filePart);
+        if ("add".equals(action)) {
+            // Handle file upload for image
+            Part filePart = request.getPart("image"); // The name attribute from the form
+            InputStream inputStream = filePart.getInputStream(); // Read the file as input stream
 
-                // Get the path to store the image in the uploads folder
-                // Ensure the upload directory exists
-                String uploadDirPath = "C:/uploads";
-                File uploadDir = new File(uploadDirPath);
-                if (!uploadDir.exists()) {
-                    uploadDir.mkdirs();
-                }
+            // Convert input stream to byte array
+            byte[] imageBytes = inputStream.readAllBytes();
 
+            // Create and save the product
+            Product product = new Product();
+            product.setName(request.getParameter("name"));
+            product.setDescription(request.getParameter("description"));
 
-    // Define the full file path for the uploaded image
-                String uploadPath = uploadDirPath + File.separator + fileName;
-
-    // Log the upload path for debugging
-                System.out.println("Uploading to: " + uploadPath);
-
-    // Write the file to disk
-                filePart.write(uploadPath); // Save the file to the directory
-
-                // Create and save the product
-                Product product = new Product();
-                product.setName(request.getParameter("name"));
-                product.setDescription(request.getParameter("description"));
-                // Handle price
-                String priceParam = request.getParameter("price");
-                if (priceParam != null && !priceParam.trim().isEmpty()) {
-                    try {
-                        product.setPrice(Double.parseDouble(priceParam));
-                    } catch (NumberFormatException e) {
-                        request.setAttribute("error", "Invalid price format.");
-                        request.getRequestDispatcher("/views/admin-views/products/add-product.jsp").forward(request, response);
-                        return;
-                    }
-                } else {
-                    request.setAttribute("error", "Price is required.");
+            // Handle price
+            String priceParam = request.getParameter("price");
+            if (priceParam != null && !priceParam.trim().isEmpty()) {
+                try {
+                    product.setPrice(Double.parseDouble(priceParam));
+                } catch (NumberFormatException e) {
+                    request.setAttribute("error", "Invalid price format.");
                     request.getRequestDispatcher("/views/admin-views/products/add-product.jsp").forward(request, response);
                     return;
                 }
-
-                // Set the image file name or relative path (relative to the web root)
-                product.setImage(fileName); // Store the relative path to the image in the database
-                product.setStock(Integer.parseInt(request.getParameter("stock"))); // Set the stock value
-                System.out.println("Selected category ID: " + request.getParameter("category"));
-
-                // Handle category
-                product.setCategory_id(Integer.parseInt(request.getParameter("category")));
-                // Add the product to the database
-                productDAO.addProduct(product);
-
-                // Redirect to the product list page after adding
-                response.sendRedirect("product?action=list");
+            } else {
+                request.setAttribute("error", "Price is required.");
+                request.getRequestDispatcher("/views/admin-views/products/add-product.jsp").forward(request, response);
+                return;
             }
+
+            product.setImage(imageBytes); // Set the image bytes
+            product.setStock(Integer.parseInt(request.getParameter("stock"))); // Set the stock value
+            product.setCategory_id(Integer.parseInt(request.getParameter("category"))); // Handle category
+
+            // Add the product to the database
+            productDAO.addProduct(product);
+
+            // Redirect to the product list page after adding
+            response.sendRedirect("product?action=list");
+        }
 
         // Handle Edit Product action
         if ("edit".equals(action)) {
-            // Get the product ID to be updated
-            int productId = Integer.parseInt(request.getParameter("id"));
-            Product existingProduct = productDAO.getProductById(productId);
+            try {
+                // Get the product ID to be updated
+                int productId = Integer.parseInt(request.getParameter("id"));
+                Product existingProduct = productDAO.getProductById(productId);
 
-            if (existingProduct != null) {
-                // Update product details from form input
-                existingProduct.setName(request.getParameter("name"));
-                existingProduct.setDescription(request.getParameter("description"));
+                if (existingProduct != null) {
+                    // Update product details from form input
+                    existingProduct.setName(request.getParameter("name"));
+                    existingProduct.setDescription(request.getParameter("description"));
 
-                // Handle price update
-                String priceParam = request.getParameter("price");
-                if (priceParam != null && !priceParam.trim().isEmpty()) {
-                    try {
-                        existingProduct.setPrice(Double.parseDouble(priceParam));
-                    } catch (NumberFormatException e) {
-                        request.setAttribute("error", "Invalid price format.");
+                    // Handle price update
+                    String priceParam = request.getParameter("price");
+                    if (priceParam != null && !priceParam.trim().isEmpty()) {
+                        try {
+                            existingProduct.setPrice(Double.parseDouble(priceParam));
+                        } catch (NumberFormatException e) {
+                            request.setAttribute("error", "Invalid price format.");
+                            request.getRequestDispatcher("/views/admin-views/products/edit-product.jsp").forward(request, response);
+                            return;
+                        }
+                    } else {
+                        request.setAttribute("error", "Price is required.");
                         request.getRequestDispatcher("/views/admin-views/products/edit-product.jsp").forward(request, response);
                         return;
                     }
-                } else {
-                    request.setAttribute("error", "Price is required.");
-                    request.getRequestDispatcher("/views/admin-views/products/edit-product.jsp").forward(request, response);
-                    return;
-                }
 
-                // If new image is uploaded, handle file update
-                Part filePart = request.getPart("image"); // The name attribute from the form
-                if (filePart != null && filePart.getSize() > 0) {
-                    String fileName = extractFileName(filePart);
+                    // If a new image is uploaded, handle the update
+                    Part filePart = request.getPart("image"); // The name attribute from the form
+                    if (filePart != null && filePart.getSize() > 0) {
+                        byte[] imageBytes = filePart.getInputStream().readAllBytes(); // Read as byte array
 
-                    // Get the path to store the image in the uploads folder
-                    String uploadDirPath = getServletContext().getRealPath("") + File.separator + "uploads";
-                    File uploadDir = new File(uploadDirPath);
-                    if (!uploadDir.exists()) {
-                        uploadDir.mkdirs(); // Create directory if not exists
+                        // Update image blob in the product object
+                        existingProduct.setImage(imageBytes); // For blob storage
+
+                        // Alternatively, if storing images as files
+                        // String fileName = extractFileName(filePart);
+                        // String uploadDirPath = getServletContext().getRealPath("/uploads");
+                        // File uploadDir = new File(uploadDirPath);
+                        // if (!uploadDir.exists()) {
+                        //     uploadDir.mkdirs();
+                        // }
+                        // String uploadPath = uploadDirPath + File.separator + fileName;
+                        // filePart.write(uploadPath);
+                        // existingProduct.setImage(fileName);
                     }
 
-                    // Define the full file path for the uploaded image
-                    String uploadPath = uploadDirPath + File.separator + fileName;
-                    filePart.write(uploadPath); // Save the file to the directory
+                    // Update the product in the database
+                    boolean isUpdated = productDAO.updateProduct(existingProduct);
 
-                    // Set the new image path in the product object
-                    existingProduct.setImage( fileName); // Store the relative path to the image in the database
-                }
-
-                // Update the product in the database
-                boolean isUpdated = productDAO.updateProduct(existingProduct);
-                if (isUpdated) {
-                    // Redirect to the product list page after editing
-                    response.sendRedirect("product?action=list");
+                    if (isUpdated) {
+                        // Redirect to the product list page after editing
+                        response.sendRedirect("product?action=list");
+                    } else {
+                        request.setAttribute("error", "Failed to update the product.");
+                        request.getRequestDispatcher("/views/admin-views/products/edit-product.jsp").forward(request, response);
+                    }
                 } else {
-                    request.setAttribute("error", "Failed to update the product.");
-                    request.getRequestDispatcher("/views/admin-views/products/edit-product.jsp").forward(request, response);
+                    request.setAttribute("error", "Product not found.");
+                    request.getRequestDispatcher("/views/admin-views/index.jsp").forward(request, response);
                 }
-            } else {
-                request.setAttribute("error", "Product not found.");
-                request.getRequestDispatcher("/views/admin-views/index.jsp").forward(request, response);
+            } catch (Exception e) {
+                e.printStackTrace();
+                request.setAttribute("error", "An unexpected error occurred: " + e.getMessage());
+                request.getRequestDispatcher("/views/admin-views/products/edit-product.jsp").forward(request, response);
             }
         }
+
 
         // Handle Delete Product action
 

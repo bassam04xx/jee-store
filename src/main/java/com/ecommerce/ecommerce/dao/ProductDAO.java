@@ -1,14 +1,11 @@
 package com.ecommerce.ecommerce.dao;
 
 import com.ecommerce.ecommerce.models.Product;
-import com.ecommerce.ecommerce.utils.DatabaseConnection;
-import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.Part;
 
-import java.io.File;
-import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import static com.ecommerce.ecommerce.utils.DatabaseConnection.getConnection;
@@ -24,15 +21,23 @@ public class ProductDAO {
              ResultSet resultSet = preparedStatement.executeQuery()) {
 
             while (resultSet.next()) {
-                products.add(new Product(
+                Product product = new Product(
                         resultSet.getInt("id"),
                         resultSet.getString("name"),
                         resultSet.getString("description"),
                         resultSet.getDouble("price"),
                         resultSet.getInt("stock"),
-                        resultSet.getString("image"),
+                        resultSet.getBytes("image"),
                         resultSet.getInt("category_id")
-                ));
+                );
+
+                byte[] imageBytes = resultSet.getBytes("image");
+                if (imageBytes != null) {
+                    String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                    product.setImageBase64(base64Image);
+                }
+
+                products.add(product);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -45,7 +50,6 @@ public class ProductDAO {
 
     public boolean addProduct(Product product) {
         String sql = "INSERT INTO products (name, description, price, stock, image, category_id) VALUES (?, ?, ?, ?, ?, ?)";
-        String imagePath = product.getImage(); // Use the image path already set in the product object
 
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -54,7 +58,7 @@ public class ProductDAO {
             preparedStatement.setString(2, product.getDescription());
             preparedStatement.setDouble(3, product.getPrice());
             preparedStatement.setInt(4, product.getStock());
-            preparedStatement.setString(5, imagePath); // Store the image path in DB
+            preparedStatement.setBytes(5, product.getImage());
             preparedStatement.setInt(6, product.getCategory_id());
             preparedStatement.executeUpdate();
             return true;
@@ -116,9 +120,15 @@ public class ProductDAO {
                             resultSet.getString("description"),
                             resultSet.getDouble("price"),
                             resultSet.getInt("stock"),
-                            resultSet.getString("image"),
+                            resultSet.getBytes("image"),
                             resultSet.getInt("category_id")
                     );
+
+                    byte[] imageBytes = resultSet.getBytes("image");
+                    if (imageBytes != null) {
+                        String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                        product.setImageBase64(base64Image);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -140,7 +150,7 @@ public class ProductDAO {
             preparedStatement.setString(2, updatedProduct.getDescription());
             preparedStatement.setDouble(3, updatedProduct.getPrice());
             preparedStatement.setInt(4, updatedProduct.getStock());
-            preparedStatement.setString(5, updatedProduct.getImage());
+            preparedStatement.setBytes(5, updatedProduct.getImage());
             preparedStatement.setInt(6, updatedProduct.getId());
             preparedStatement.setInt(7, updatedProduct.getCategory_id());
             preparedStatement.executeUpdate();
