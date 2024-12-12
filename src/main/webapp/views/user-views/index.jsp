@@ -1,14 +1,23 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.ecommerce.ecommerce.models.Product" %>
+<%@ page import="com.ecommerce.ecommerce.dao.ProductDAO" %>
 <%
-    if (request.getAttribute("products") == null) {
-        String userType = "client";
-        request.setAttribute("Type", userType);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/product?action=list");
-        dispatcher.forward(request, response);
+//    if (request.getAttribute("products") == null) {
+//        String userType = "client";
+//        request.setAttribute("Type", userType);
+//        RequestDispatcher dispatcher = request.getRequestDispatcher("/product?action=list");
+//        dispatcher.forward(request, response);
+//    }
+//    List<Product> products = (List<Product>) request.getAttribute("products");
+    session = request.getSession();
+    List<Product> products = (List<Product>) session.getAttribute("products");
+
+    if (products == null) {
+        ProductDAO productDAO = new ProductDAO();
+        products = productDAO.getAllProducts();
+        session.setAttribute("products", products);
     }
-    List<Product> products = (List<Product>) request.getAttribute("products");
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -40,23 +49,17 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         <% for (Product product : products) { %>
         <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-transform transform hover:scale-105">
-            <img src="<%= request.getContextPath() + "/uploads/" + product.getImage() %>" alt="<%= product.getName() %>" class="w-full h-64 object-cover">
+            <img src="data:<%= product.getMimeType() %>;base64,<%= product.getImageBase64() %>" alt="<%= product.getName() %>" class="w-32 h-32 object-cover rounded-md">
             <div class="p-5">
                 <h3 class="text-xl font-semibold text-gray-800"><%= product.getName() %></h3>
                 <p class="text-gray-600 mt-2"><%= product.getDescription() %></p>
-                <div class="text-gray-800 font-bold mt-3 mb-4">$<%= product.getPrice() %></div>
-                <a href="<%= request.getContextPath() %>/views/user-views/product-details.jsp?id=<%= product.getId() %>" class="block text-center bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
-                    View Details
-                </a>
-                <div class="flex items-center mt-6 w-full">
-                    <form class="w-full" action="<%= request.getContextPath() %>/orderItem" method="POST">
-                        <input type="hidden" name="action" value="addProductToCart">
-                        <input type="hidden" name="productId" value="<%= product.getId() %>">
+                     <input type="hidden" name="productId" value="<%= product.getId() %>">
                         <input type="hidden" id="formQuantity" name="quantity" value="1">
-                        <button type="submit" class="flex items-center justify-center bg-green-500 text-white px-4 py-2 w-full rounded-lg shadow-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none mr-4">
+                        <button type="submit" class="flex items-center justify-center bg-green-500 text-white px-4 py-2 w-full rounded-lg shadow-lg hover:bg-green-600 focus:ring-2 focus:ring-blue-500 focus:outline-none mr-4">
                             <i class="fas fa-cart-plus mr-2"></i>Add to Cart
                         </button>
                     </form>
+                </div>
             </div>
         </div>
         <% } %>
@@ -65,6 +68,7 @@
     <p class="text-gray-600 text-center">No products are available at the moment.</p>
     <% } %>
 </main>
+
 
 <!-- Footer -->
 <footer class=" bottom-0 bg-gradient-to-r from-gray-900 to-gray-800 text-white py-4 mt-8">

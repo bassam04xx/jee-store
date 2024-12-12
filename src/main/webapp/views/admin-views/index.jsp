@@ -2,6 +2,7 @@
 <%@ page import="com.ecommerce.ecommerce.models.User" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.ecommerce.ecommerce.models.Category" %>
+<%@ page import="com.ecommerce.ecommerce.models.Order" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="./static/admin-sidebar.jsp" %> <!-- Include Sidebar -->
 <!DOCTYPE html>
@@ -25,10 +26,18 @@
   List<Product> products = (List<Product>) session.getAttribute("products");
   List<User> users = (List<User>) session.getAttribute("users");
   List<Category> categories = (List<Category>) session.getAttribute("categories");
-
+  List<Order> orders = (List<Order>) session.getAttribute("orders");
+  if (products == null) {
+    response.sendRedirect(request.getContextPath() + "/product?action=list");
+    return; // Stop further processing
+  }
   // Redirect to fetch users if not present
   if (users == null) {
     response.sendRedirect(request.getContextPath() + "/user?action=list");
+    return; // Stop further processing
+  }
+  if (orders == null) {
+    response.sendRedirect(request.getContextPath() + "/order?action=list");
     return; // Stop further processing
   }
 %>
