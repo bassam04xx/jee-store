@@ -26,15 +26,11 @@
   List<User> users = (List<User>) session.getAttribute("users");
   List<Category> categories = (List<Category>) session.getAttribute("categories");
 
-
-
   // Redirect to fetch users if not present
   if (users == null) {
     response.sendRedirect(request.getContextPath() + "/user?action=list");
     return; // Stop further processing
   }
-
-
 %>
 
 <div class="flex">
@@ -59,6 +55,7 @@
           <th class="px-6 py-3 text-left">Description</th>
           <th class="px-6 py-3 text-left">Price</th>
           <th class="px-6 py-3 text-left">Stock</th>
+          <th class="px-6 py-3 text-left">Image</th>
           <th class="px-6 py-3 text-left">Actions</th>
         </tr>
         </thead>

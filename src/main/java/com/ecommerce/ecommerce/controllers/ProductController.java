@@ -65,6 +65,8 @@ public class ProductController extends HttpServlet {
 
                     if (isDeleted) {
                         // If deletion is successful, redirect to the list view
+                        List<Product> products = productDAO.getAllProducts();
+                        request.getSession().setAttribute("products", products);
                         response.sendRedirect("product?action=list");
                     } else {
                         // If deletion failed, forward to the admin page with error message
@@ -167,6 +169,8 @@ public class ProductController extends HttpServlet {
 
             // Add the product to the database
             productDAO.addProduct(product);
+            List<Product> products = productDAO.getAllProducts();
+            request.getSession().setAttribute("products", products);
 
             // Redirect to the product list page after adding
             response.sendRedirect("product?action=list");
@@ -207,23 +211,14 @@ public class ProductController extends HttpServlet {
 
                         // Update image blob in the product object
                         existingProduct.setImage(imageBytes); // For blob storage
-
-                        // Alternatively, if storing images as files
-                        // String fileName = extractFileName(filePart);
-                        // String uploadDirPath = getServletContext().getRealPath("/uploads");
-                        // File uploadDir = new File(uploadDirPath);
-                        // if (!uploadDir.exists()) {
-                        //     uploadDir.mkdirs();
-                        // }
-                        // String uploadPath = uploadDirPath + File.separator + fileName;
-                        // filePart.write(uploadPath);
-                        // existingProduct.setImage(fileName);
                     }
 
                     // Update the product in the database
                     boolean isUpdated = productDAO.updateProduct(existingProduct);
 
                     if (isUpdated) {
+                        List<Product> products = productDAO.getAllProducts();
+                        request.getSession().setAttribute("products", products);
                         // Redirect to the product list page after editing
                         response.sendRedirect("product?action=list");
                     } else {
