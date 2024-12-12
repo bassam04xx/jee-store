@@ -24,6 +24,16 @@
         </multipart-config>
     </servlet>
     <servlet>
+
+        <servlet-name>OrderItemController</servlet-name>
+        <servlet-class>com.ecommerce.ecommerce.controllers.OrderItemController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>OrderItemController</servlet-name>
+        <url-pattern>/orderItem</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>UserController</servlet-name>
         <servlet-class>com.ecommerce.ecommerce.controllers.UserController</servlet-class>
     </servlet>
@@ -31,6 +41,15 @@
         <servlet-name>UserController</servlet-name>
         <url-pattern>/user</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>CategoryController</servlet-name>
+        <servlet-class>com.ecommerce.ecommerce.controllers.CategoryController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CategoryController</servlet-name>
+        <url-pattern>/category</url-pattern>
+    </servlet-mapping>
+
 
 
     <servlet-mapping>

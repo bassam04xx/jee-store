@@ -15,7 +15,7 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
     <!-- Manage Products -->
     <div class="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
-      <a href="${pageContext.request.contextPath}/admin/manage-products"
+      <a href="${pageContext.request.contextPath}/views/admin-views/index.jsp#products"
          class="block text-center p-8 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold text-xl rounded-t-lg">
         Manage Products
       </a>
@@ -24,7 +24,7 @@
 
     <!-- Manage Users -->
     <div class="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
-      <a href="${pageContext.request.contextPath}/admin/manage-users"
+      <a href="${pageContext.request.contextPath}/views/admin-views/index.jsp#users"
          class="block text-center p-8 bg-gradient-to-r from-green-500 to-green-700 text-white font-semibold text-xl rounded-t-lg">
         Manage Users
       </a>
@@ -33,7 +33,7 @@
 
     <!-- Manage Orders -->
     <div class="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
-      <a href="${pageContext.request.contextPath}/admin/manage-orders"
+      <a href="${pageContext.request.contextPath}//views/admin-views/index.jsp#orders"
          class="block text-center p-8 bg-gradient-to-r from-yellow-500 to-yellow-700 text-white font-semibold text-xl rounded-t-lg">
         Manage Orders
       </a>

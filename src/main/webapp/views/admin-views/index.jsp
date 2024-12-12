@@ -1,6 +1,7 @@
 <%@ page import="com.ecommerce.ecommerce.models.Product" %>
 <%@ page import="com.ecommerce.ecommerce.models.User" %>
 <%@ page import="java.util.List" %>
+<%@ page import="com.ecommerce.ecommerce.models.Category" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="./static/admin-sidebar.jsp" %> <!-- Include Sidebar -->
 <!DOCTYPE html>
@@ -23,22 +24,19 @@
   // Get data from session
   List<Product> products = (List<Product>) session.getAttribute("products");
   List<User> users = (List<User>) session.getAttribute("users");
-
-
+  List<Category> categories = (List<Category>) session.getAttribute("categories");
 
   // Redirect to fetch users if not present
   if (users == null) {
     response.sendRedirect(request.getContextPath() + "/user?action=list");
     return; // Stop further processing
   }
-
-
 %>
 
 <div class="flex">
   <!-- Main Content Section -->
   <main class="flex-1 p-8">
-    <div class="mb-8">
+    <div class="mb-8" id="products">
       <h1 class="text-3xl font-bold text-gray-700">Product Management</h1>
       <p class="text-gray-600 mt-2">Manage products, edit, delete, or add new products to your catalog.</p>
     </div>
@@ -57,6 +55,7 @@
           <th class="px-6 py-3 text-left">Description</th>
           <th class="px-6 py-3 text-left">Price</th>
           <th class="px-6 py-3 text-left">Stock</th>
+          <th class="px-6 py-3 text-left">Image</th>
           <th class="px-6 py-3 text-left">Actions</th>
         </tr>
         </thead>
@@ -68,6 +67,9 @@
             <td class="px-6 py-3">${product.price}</td>
             <td class="px-6 py-3">${product.stock}</td>
             <td class="px-6 py-3">
+              <img src="data:${product.mimeType};base64,${product.imageBase64}" alt="${product.name}" class="w-32 h-32 object-cover rounded-md">
+            </td>
+            <td class="px-6 py-3">
               <a href="${pageContext.request.contextPath}/product?action=edit&id=${product.id}" class="text-blue-500 hover:text-blue-700 px-4 py-2 rounded-md">Edit</a>
               <a href="${pageContext.request.contextPath}/product?action=delete&id=${product.id}" class="text-red-500 hover:text-red-700 px-4 py-2 rounded-md">Delete</a>
             </td>
@@ -77,8 +79,44 @@
       </table>
     </c:if>
 
+    <!-- Category Management Section -->
+    <div class="mb-8 mt-10" id="categories" >
+      <h1 class="text-3xl font-bold text-gray-700">Category Management</h1>
+      <p class="text-gray-600 mt-2">Manage categories, edit, delete, or add new categories to your catalog.</p>
+    </div>
+
+    <!-- Add Category Button -->
+    <div class="mb-4 text-right">
+      <a href="${pageContext.request.contextPath}/category?action=add" class="bg-blue-500 text-white py-2 px-4 rounded-lg shadow-lg hover:bg-blue-600 transition duration-300">Add New Category</a>
+    </div>
+
+    <!-- Category Table -->
+    <c:if test="${!empty categories}">
+      <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
+        <thead>
+        <tr class="bg-gray-200 text-gray-700">
+          <th class="px-6 py-3 text-left">Category Name</th>
+          <th class="px-6 py-3 text-left">Description</th>
+          <th class="px-6 py-3 text-left">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <c:forEach var="category" items="${categories}">
+          <tr class="border-b hover:bg-gray-50">
+            <td class="px-6 py-3">${category.name}</td>
+            <td class="px-6 py-3">${category.description}</td>
+            <td class="px-6 py-3">
+              <a href="${pageContext.request.contextPath}/category?action=edit&id=${category.id}" class="text-blue-500 hover:text-blue-700 px-4 py-2 rounded-md">Edit</a>
+              <a href="${pageContext.request.contextPath}/category?action=delete&id=${category.id}" class="text-red-500 hover:text-red-700 px-4 py-2 rounded-md">Delete</a>
+            </td>
+          </tr>
+        </c:forEach>
+        </tbody>
+      </table>
+    </c:if>
+
     <!-- User Management Section -->
-    <div class="mb-8 mt-10">
+    <div class="mb-8 mt-10" id="users" >
       <h1 class="text-3xl font-bold text-gray-700">User Management</h1>
       <p class="text-gray-600 mt-2">Manage users, edit, delete, or add new users to your catalog.</p>
     </div>
@@ -110,6 +148,41 @@
             <td class="px-6 py-3">
               <a href="${pageContext.request.contextPath}/user?action=edit&id=${user.id}" class="text-blue-500 hover:text-blue-700 px-4 py-2 rounded-md">Edit</a>
               <a href="${pageContext.request.contextPath}/user?action=delete&id=${user.id}" class="text-red-500 hover:text-red-700 px-4 py-2 rounded-md">Delete</a>
+            </td>
+          </tr>
+        </c:forEach>
+        </tbody>
+      </table>
+    </c:if>
+
+    <!-- Orders Management Section -->
+    <div class="mb-8 mt-10" id="orders" >
+      <h1 class="text-3xl font-bold text-gray-700">Order Management</h1>
+      <p class="text-gray-600 mt-2">Manage orders, edit statuses, and view order details.</p>
+    </div>
+
+    <!-- Orders Table -->
+    <c:if test="${!empty orders}">
+      <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
+        <thead>
+        <tr class="bg-gray-200 text-gray-700">
+          <th class="px-6 py-3 text-left">Order ID</th>
+          <th class="px-6 py-3 text-left">User ID</th>
+          <th class="px-6 py-3 text-left">Date</th>
+          <th class="px-6 py-3 text-left">Status</th>
+          <th class="px-6 py-3 text-left">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <c:forEach var="order" items="${orders}">
+          <tr class="border-b hover:bg-gray-50">
+            <td class="px-6 py-3">${order.id}</td>
+            <td class="px-6 py-3">${order.userId}</td>
+            <td class="px-6 py-3">${order.date}</td>
+            <td class="px-6 py-3">${order.status}</td>
+            <td class="px-6 py-3">
+              <a href="${pageContext.request.contextPath}/order?action=edit&id=${order.id}" class="text-blue-500 hover:text-blue-700 px-4 py-2 rounded-md">Edit</a>
+              <a href="${pageContext.request.contextPath}/order?action=view&id=${order.id}" class="text-green-500 hover:text-green-700 px-4 py-2 rounded-md">Show</a>
             </td>
           </tr>
         </c:forEach>

@@ -58,10 +58,7 @@
       <!-- Display existing image -->
       <div class="mt-2">
         <p class="text-gray-600 text-sm">Current Image:</p>
-        <img src="/uploads/${product.image}"
-             alt="Product Image"
-             class="w-32 h-32 object-cover rounded-md">
-
+        <img src="data:${product.mimeType};base64,${product.imageBase64}" alt="${product.name}" class="w-32 h-32 object-cover rounded-md">
 
 
       </div>
