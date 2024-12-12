@@ -31,6 +31,8 @@ public class ProductDAO {
                         resultSet.getInt("category_id")
                 );
 
+                product.setMimeType(resultSet.getString("mime_type")); // Set MIME type
+
                 byte[] imageBytes = resultSet.getBytes("image");
                 if (imageBytes != null) {
                     String base64Image = Base64.getEncoder().encodeToString(imageBytes);
@@ -49,7 +51,7 @@ public class ProductDAO {
     }
 
     public boolean addProduct(Product product) {
-        String sql = "INSERT INTO products (name, description, price, stock, image, category_id) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO products (name, description, price, stock, image, mime_type, category_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -59,10 +61,10 @@ public class ProductDAO {
             preparedStatement.setDouble(3, product.getPrice());
             preparedStatement.setInt(4, product.getStock());
             preparedStatement.setBytes(5, product.getImage());
-            preparedStatement.setInt(6, product.getCategory_id());
+            preparedStatement.setString(6, product.getMimeType()); // Save the MIME type
+            preparedStatement.setInt(7, product.getCategory_id());
             preparedStatement.executeUpdate();
             return true;
-
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -71,6 +73,7 @@ public class ProductDAO {
 
         return false;
     }
+
 
 //    private String saveImage(Part imagePart, ServletContext context) {
 //        String uploadDir = context.getRealPath("/uploads"); // Correct the path here
@@ -124,6 +127,8 @@ public class ProductDAO {
                             resultSet.getInt("category_id")
                     );
 
+                    product.setMimeType(resultSet.getString("mime_type")); // Set MIME type
+
                     byte[] imageBytes = resultSet.getBytes("image");
                     if (imageBytes != null) {
                         String base64Image = Base64.getEncoder().encodeToString(imageBytes);
@@ -140,8 +145,9 @@ public class ProductDAO {
         return product;
     }
 
+
     public boolean updateProduct(Product updatedProduct) {
-        String sql = "UPDATE products SET name = ?, description = ?, price = ?, stock = ?, image = ?, category_id = ? WHERE id = ?";
+        String sql = "UPDATE products SET name = ?, description = ?, price = ?, stock = ?, image = ?, mime_type = ?, category_id = ? WHERE id = ?";
 
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -151,8 +157,9 @@ public class ProductDAO {
             preparedStatement.setDouble(3, updatedProduct.getPrice());
             preparedStatement.setInt(4, updatedProduct.getStock());
             preparedStatement.setBytes(5, updatedProduct.getImage());
-            preparedStatement.setInt(6, updatedProduct.getId());
+            preparedStatement.setString(6, updatedProduct.getMimeType()); // Update MIME type
             preparedStatement.setInt(7, updatedProduct.getCategory_id());
+            preparedStatement.setInt(8, updatedProduct.getId());
             preparedStatement.executeUpdate();
             return true;
 

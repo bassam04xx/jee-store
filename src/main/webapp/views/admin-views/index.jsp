@@ -70,7 +70,7 @@
             <td class="px-6 py-3">${product.price}</td>
             <td class="px-6 py-3">${product.stock}</td>
             <td class="px-6 py-3">
-              <img src="data:image/jpeg;base64,${product.imageBase64}" alt="${product.name}" class="w-32 h-32 object-cover rounded-md">
+              <img src="data:${product.mimeType};base64,${product.imageBase64}" alt="${product.name}" class="w-32 h-32 object-cover rounded-md">
             </td>
             <td class="px-6 py-3">
               <a href="${pageContext.request.contextPath}/product?action=edit&id=${product.id}" class="text-blue-500 hover:text-blue-700 px-4 py-2 rounded-md">Edit</a>

@@ -9,6 +9,8 @@ public class Product {
     private byte[] image; // Updated to store image as blob
     private int category_id;
     private String imageBase64;
+    private String mimeType;
+
 
 
     // Default Constructor
@@ -66,5 +68,13 @@ public class Product {
 
     public void setImageBase64(String imageBase64) {
         this.imageBase64 = imageBase64;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
     }
 }
