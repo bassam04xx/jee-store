@@ -14,6 +14,15 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>OrderItemController</servlet-name>
+        <servlet-class>com.ecommerce.ecommerce.controllers.OrderItemController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>OrderItemController</servlet-name>
+        <url-pattern>/orderItem</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
 
         <servlet-name>ProductController</servlet-name>
         <servlet-class>com.ecommerce.ecommerce.controllers.ProductController</servlet-class>

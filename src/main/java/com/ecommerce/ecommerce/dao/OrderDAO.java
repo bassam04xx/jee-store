@@ -21,7 +21,7 @@ public class OrderDAO {
             while (resultSet.next()) {
                 orders.add(new Order(
                         resultSet.getInt("id"),
-                        resultSet.getInt("userId"),
+                        resultSet.getInt("user_id"),
                         resultSet.getDate("date"),
                         resultSet.getString("status")
                 ));
@@ -36,21 +36,25 @@ public class OrderDAO {
 
     // Add a new order
     public boolean addOrder(Order order) {
-        String sql = "INSERT INTO orders (userId, date, status) VALUES (?, ?, ?)";
-
+        String sql = "INSERT INTO orders (user_id, date, status) VALUES (?, ?, ?) RETURNING id";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-
             preparedStatement.setInt(1, order.getUserId());
             preparedStatement.setDate(2, new java.sql.Date(order.getDate().getTime()));
             preparedStatement.setString(3, order.getStatus());
-            preparedStatement.executeUpdate();
-            return true;
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                order.setId(resultSet.getInt(1));
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
+
 
     // Fetch order by ID
     public Order getOrderById(int id) {
@@ -65,7 +69,7 @@ public class OrderDAO {
                 if (resultSet.next()) {
                     order = new Order(
                             resultSet.getInt("id"),
-                            resultSet.getInt("userId"),
+                            resultSet.getInt("user_id"),
                             resultSet.getDate("date"),
                             resultSet.getString("status")
                     );
@@ -78,16 +82,14 @@ public class OrderDAO {
     }
 
     // Update an existing order
-    public boolean updateOrder(Order order) {
-        String sql = "UPDATE orders SET userId = ?, date = ?, status = ? WHERE id = ?";
+    public boolean updateOrder(String status, int id) {
+        String sql = "UPDATE orders SET  status = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            preparedStatement.setInt(1, order.getUserId());
-            preparedStatement.setDate(2, new java.sql.Date(order.getDate().getTime()));
-            preparedStatement.setString(3, order.getStatus());
-            preparedStatement.setInt(4, order.getId());
+            preparedStatement.setString(1,status);
+            preparedStatement.setInt(2, id);
             preparedStatement.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -119,7 +121,7 @@ public class OrderDAO {
     // Fetch orders by user ID
     public List<Order> getOrdersByUserId(int userId) {
         List<Order> orders = new ArrayList<>();
-        String sql = "SELECT * FROM orders WHERE userId = ?";
+        String sql = "SELECT * FROM orders WHERE user_id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -129,7 +131,7 @@ public class OrderDAO {
                 while (resultSet.next()) {
                     orders.add(new Order(
                             resultSet.getInt("id"),
-                            resultSet.getInt("userId"),
+                            resultSet.getInt("user_id"),
                             resultSet.getDate("date"),
                             resultSet.getString("status")
                     ));
@@ -156,7 +158,7 @@ public class OrderDAO {
                 while (resultSet.next()) {
                     orders.add(new Order(
                             resultSet.getInt("id"),
-                            resultSet.getInt("userId"),
+                            resultSet.getInt("user_id"),
                             resultSet.getDate("date"),
                             resultSet.getString("status")
                     ));
@@ -189,4 +191,5 @@ public class OrderDAO {
         }
         return count;
     }
+
 }

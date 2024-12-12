@@ -27,7 +27,7 @@
             J-Store
         </div>
         <div>
-            <a href="<%= request.getContextPath() %>/cart" class="text-white hover:text-blue-200 mx-2">Cart</a>
+            <a href="<%= request.getContextPath() %>/views/user-views/cart.jsp" class="text-white hover:text-blue-200 mx-2">Cart</a>
             <a href="<%= request.getContextPath() %>/logout" class="text-white hover:text-blue-200 mx-2">Logout</a>
         </div>
     </div>
@@ -48,9 +48,15 @@
                 <a href="<%= request.getContextPath() %>/views/user-views/product-details.jsp?id=<%= product.getId() %>" class="block text-center bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
                     View Details
                 </a>
-                <button class="add-to-cart block text-center bg-green-500 text-white py-2 mt-2 rounded hover:bg-green-600" data-id="<%= product.getId() %>" data-name="<%= product.getName() %>" data-price="<%= product.getPrice() %>">
-                    Add to Cart
-                </button>
+                <div class="flex items-center mt-6 w-full">
+                    <form class="w-full" action="<%= request.getContextPath() %>/orderItem" method="POST">
+                        <input type="hidden" name="action" value="addProductToCart">
+                        <input type="hidden" name="productId" value="<%= product.getId() %>">
+                        <input type="hidden" id="formQuantity" name="quantity" value="1">
+                        <button type="submit" class="flex items-center justify-center bg-green-500 text-white px-4 py-2 w-full rounded-lg shadow-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none mr-4">
+                            <i class="fas fa-cart-plus mr-2"></i>Add to Cart
+                        </button>
+                    </form>
             </div>
         </div>
         <% } %>
@@ -61,7 +67,7 @@
 </main>
 
 <!-- Footer -->
-<footer class="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-4 mt-8">
+<footer class=" bottom-0 bg-gradient-to-r from-gray-900 to-gray-800 text-white py-4 mt-8">
     <div class="container mx-auto text-center">
         <p>&copy; 2024 J-Store. All rights reserved.</p>
     </div>

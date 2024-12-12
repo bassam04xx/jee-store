@@ -2,18 +2,10 @@
 <%@ page import="com.ecommerce.ecommerce.dao.ProductDAO" %>
 <%@ page import="com.ecommerce.ecommerce.models.Product" %>
 <%@ page import="java.util.List" %>
-<%@ page import="com.ecommerce.ecommerce.models.OrderDetails" %>
-<%@ page import="com.ecommerce.ecommerce.models.CartItem" %>
 <%@ page import="java.util.ArrayList" %>
 <%
   String productIdParam = request.getParameter("id");
   Product product = null;
-
-  // Check if the cart is initialized in the session
-  if (session.getAttribute("cart") == null) {
-    ArrayList<CartItem> cartItems = new ArrayList<>();
-    session.setAttribute("cart", cartItems); // Initialize cart in session if not already initialized
-  }
 
   // Fetch product by ID
   if (productIdParam != null) {
@@ -22,7 +14,7 @@
       ProductDAO productDAO = new ProductDAO();
       product = productDAO.getProductById(productId);
     } catch (NumberFormatException e) {
-      // Handle invalid product ID format
+      System.out.println("Invalid product ID format: " + productIdParam);
     }
   }
 %>
@@ -81,27 +73,14 @@
       </div>
 
       <div class="flex items-center mt-6">
-        <button id="addToCart" onclick="
-          <%
-            // Retrieve cart from session
-            List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
-            boolean found = false;
-            // Loop through the cart to check if the product is already there
-            for (CartItem item : cart) {
-                if (item.getProductId() == product.getId()) {
-                    item.setQuantity(item.getQuantity() + 1); // Increment quantity
-                    found = true;
-                    break;
-                }
-            }
-            // If not found, add new item to the cart
-            if (!found) {
-                cart.add(new CartItem(product.getId(), 1));
-            }
-            session.setAttribute("cart", cart); // Save updated cart in session
-          %>" class="flex items-center justify-center bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none mr-4">
-          <i class="fas fa-cart-plus mr-2"></i>Add to Cart
-        </button>
+        <form action="<%= request.getContextPath() %>/orderItem" method="POST">
+          <input type="hidden" name="action" value="addProductToCart">
+          <input type="hidden" name="productId" value="<%= product.getId() %>">
+          <input type="hidden" id="formQuantity" name="quantity" value="1">
+          <button type="submit" class="flex items-center justify-center bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none mr-4">
+            <i class="fas fa-cart-plus mr-2"></i>Add to Cart
+          </button>
+        </form>
         <a href="<%= request.getContextPath() %>/views/user-views/index.jsp" class="flex items-center justify-center bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-green-600 focus:ring-2 focus:ring-green-500 focus:outline-none">
           <i class="fas fa-arrow-left mr-2"></i>Continue Shopping
         </a>
@@ -125,9 +104,9 @@
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const quantityInput = document.getElementById('quantity');
+    const formQuantityInput = document.getElementById('formQuantity');
     const decreaseButton = document.getElementById('decreaseQuantity');
     const increaseButton = document.getElementById('increaseQuantity');
-    const addToCartButton = document.getElementById('addToCart');
 
     const maxStock = parseInt(quantityInput.getAttribute('max'), 10);
 
@@ -136,6 +115,7 @@
       const currentValue = parseInt(quantityInput.value, 10);
       if (currentValue > 1) {
         quantityInput.value = currentValue - 1;
+        formQuantityInput.value = quantityInput.value;
       }
     });
 
@@ -143,36 +123,13 @@
       const currentValue = parseInt(quantityInput.value, 10);
       if (currentValue < maxStock) {
         quantityInput.value = currentValue + 1;
+        formQuantityInput.value = quantityInput.value;
       }
     });
 
-    // Add to Cart functionality
-    addToCartButton.addEventListener('click', () => {
-      // Retrieve product details
-      const productId = '<%= product.getId() %>'; // Dynamically set the product ID
-      const productName = '<%= product.getName() %>';
-      const productPrice = parseFloat('<%= product.getPrice() %>');
-      const quantity = parseInt(quantityInput.value, 10);
-
-      // Get current cart from localStorage or initialize it
-      let cart = JSON.parse(localStorage.getItem('current-order')) || [];
-
-      // Check if product is already in the cart
-      const productIndex = cart.findIndex(item => item.id === productId);
-
-      if (productIndex !== -1) {
-        // Update quantity for existing product
-        cart[productIndex].quantity += quantity;
-      } else {
-        // Add new product with specified quantity
-        cart.push({ id: productId, name: productName, price: productPrice, quantity: quantity });
-      }
-
-      // Save the updated cart to localStorage
-      localStorage.setItem('current-order', JSON.stringify(cart));
-
-      // Provide feedback to the user
-      alert(`${quantity} x ${productName} added to the cart.`);
+    // Synchronize form quantity value with displayed quantity
+    quantityInput.addEventListener('change', () => {
+      formQuantityInput.value = quantityInput.value;
     });
   });
 </script>

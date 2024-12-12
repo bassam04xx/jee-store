@@ -1,5 +1,6 @@
 <%@ page import="com.ecommerce.ecommerce.models.Product" %>
 <%@ page import="com.ecommerce.ecommerce.models.User" %>
+<%@ page import="com.ecommerce.ecommerce.models.Order" %>
 <%@ page import="java.util.List" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="./static/admin-sidebar.jsp" %> <!-- Include Sidebar -->
@@ -16,15 +17,13 @@
 <body class="bg-gray-100 text-gray-800">
 
 <%
-
   // Retrieve session object
   session = request.getSession();
 
   // Get data from session
   List<Product> products = (List<Product>) session.getAttribute("products");
   List<User> users = (List<User>) session.getAttribute("users");
-
-
+  List<Order> orders = (List<Order>) session.getAttribute("orders"); // Assuming orders are stored in session
 
   // Redirect to fetch users if not present
   if (users == null) {
@@ -32,7 +31,11 @@
     return; // Stop further processing
   }
 
-
+  // Redirect to fetch orders if not present
+  if (orders == null) {
+    response.sendRedirect(request.getContextPath() + "/order?action=list");
+    return; // Stop further processing
+  }
 %>
 
 <div class="flex">
