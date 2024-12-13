@@ -7,6 +7,15 @@
 
 <%
     User currentUser = (User) session.getAttribute("currentUser");
+
+    if (currentUser == null) {
+        response.sendRedirect(request.getContextPath() + "/views/login.jsp");
+        return; // Stop further processing
+    }
+    if (currentUser.getStatus().equalsIgnoreCase("banned")) {
+        response.sendRedirect(request.getContextPath() + "/views/banned.jsp");
+        return; // Stop further processing
+    }
     OrderDAO orderDAO = new OrderDAO();
     List<Order> orders = orderDAO.getOrdersByUserId(currentUser.getId());
 

@@ -3,7 +3,18 @@
 <%@ page import="com.ecommerce.ecommerce.models.Product" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
+<%@ page import="com.ecommerce.ecommerce.models.User" %>
 <%
+    User currentUser = (User) session.getAttribute("currentUser");
+  if (currentUser == null) {
+    response.sendRedirect(request.getContextPath() + "/views/login.jsp");
+    return; // Stop further processing
+  }
+  if (currentUser.getStatus().equalsIgnoreCase("banned")) {
+    response.sendRedirect(request.getContextPath() + "/views/banned.jsp");
+    return; // Stop further processing
+  }
+
   String productIdParam = request.getParameter("id");
   Product product = null;
 

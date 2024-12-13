@@ -59,10 +59,21 @@ public class OrderController extends HttpServlet {
                 System.out.println("Order created with ID: " + order.getId());
                 double totalPrice = 0;
                 ProductDAO productDAO=new ProductDAO();
+
                 for (OrderItem cartItem : cart) {
                     cartItem.setOrderId(order.getId());
-                    orderItemDAO.addOrderItem(cartItem);
                     Product product = productDAO.getProductById(cartItem.getProductId());
+                    if (product.getStock() == 0) {
+                        System.out.println("Product " + product.getId() + " is out of stock");
+                        continue;
+                    }
+                    if (product.getStock() < cartItem.getQuantity()) {
+                        cartItem.setQuantity(product.getStock());
+                        System.out.println("Stock of product " + product.getId() + " is " + product.getStock());
+                    }
+                    orderItemDAO.addOrderItem(cartItem);
+                    product.setStock(product.getStock() - cartItem.getQuantity());
+                    productDAO.updateProduct(product);
                     totalPrice += cartItem.getQuantity() * product.getPrice();
 
                 }

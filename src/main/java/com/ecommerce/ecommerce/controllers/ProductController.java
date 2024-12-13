@@ -85,7 +85,7 @@ public class ProductController extends HttpServlet {
                     request.getRequestDispatcher("/views/admin-views/index.jsp").forward(request, response);
                 }
                 break;
-                case "details":
+            case "details":
                 // Handle product details action
                 int productId = Integer.parseInt(request.getParameter("id"));
                 Product product = productDAO.getProductById(productId);
@@ -97,8 +97,9 @@ public class ProductController extends HttpServlet {
                     request.getRequestDispatcher("/views/user-views/index.jsp").forward(request, response);
                 }
                 break;
-
-
+            case "listCategory":
+                handleListByCategory(request, response);
+                break;
 
             case "list":
             default:
@@ -131,8 +132,8 @@ public class ProductController extends HttpServlet {
     }
 
     @Override
-        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-            String action = request.getParameter("action");
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
 
         if ("add".equals(action)) {
             // Handle file upload for image
@@ -241,15 +242,13 @@ public class ProductController extends HttpServlet {
 
     }
 
-    // Helper method to extract the file name from the Part
-    private String extractFileName(Part part) {
-        String contentDisposition = part.getHeader("content-disposition");
-        String[] items = contentDisposition.split(";");
-        for (String item : items) {
-            if (item.trim().startsWith("filename")) {
-                return item.substring(item.indexOf("=") + 2, item.length() - 1).replace("\\", "/");
-            }
+    private void handleListByCategory(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+        if ("listCategory".equals(action)) {
+            int categoryId = Integer.parseInt(request.getParameter("id"));
+            List<Product> products = productDAO.getProductsByCategoryId(categoryId);
+            request.setAttribute("products", products);
+            request.getRequestDispatcher("/views/user-views/index.jsp").forward(request, response);
         }
-        return "";
     }
 }

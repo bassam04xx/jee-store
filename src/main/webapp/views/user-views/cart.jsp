@@ -4,7 +4,17 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="com.ecommerce.ecommerce.dao.ProductDAO" %>
 <%@ page import="com.ecommerce.ecommerce.models.Product" %>
+<%@ page import="com.ecommerce.ecommerce.models.User" %>
 <%
+    User currentUser = (User) session.getAttribute("currentUser");
+    if (currentUser == null) {
+        response.sendRedirect(request.getContextPath() + "/views/login.jsp");
+        return; // Stop further processing
+    }
+    if (currentUser.getStatus().equalsIgnoreCase("banned")) {
+        response.sendRedirect(request.getContextPath() + "/views/banned.jsp");
+        return; // Stop further processing
+    }
     List<OrderItem> cartItems = (List<OrderItem>) session.getAttribute("cart");
     if (cartItems == null) {
         cartItems = new ArrayList<>();
@@ -28,18 +38,7 @@
 </head>
 <body class="bg-gradient-to-br from-purple-50 to-indigo-100 text-gray-900 min-h-screen flex flex-col">
 <!-- Navbar -->
-<nav class="bg-gradient-to-r from-purple-600 to-indigo-600 p-4 shadow-lg">
-    <div class="container mx-auto flex justify-between items-center">
-        <div class="text-white text-3xl font-bold tracking-wider">
-            <i class="fas fa-store mr-2"></i>J-Store
-        </div>
-        <div>
-            <a href="<%= request.getContextPath() %>/views/user-views/index.jsp" class="text-white hover:text-yellow-300 transition duration-300 flex items-center">
-                <i class="fas fa-arrow-left mr-2"></i>Continue Shopping
-            </a>
-        </div>
-    </div>
-</nav>
+<%@ include file="./static/navbar.jsp" %>
 
 <!-- Main Content -->
 <main class="container mx-auto py-12 flex-grow px-4">

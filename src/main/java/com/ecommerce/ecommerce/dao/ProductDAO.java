@@ -185,4 +185,39 @@ public class ProductDAO {
         }
     }
 
+    public List<Product> getProductsByCategoryId(int categoryId) {
+        String sql = "SELECT * FROM products WHERE category_id = ?";
+        List<Product> products = new ArrayList<>();
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, categoryId);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    Product product = new Product(
+                            resultSet.getInt("id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("description"),
+                            resultSet.getDouble("price"),
+                            resultSet.getInt("stock"),
+                            resultSet.getBytes("image"),
+                            resultSet.getInt("category_id")
+                    );
+                    product.setMimeType(resultSet.getString("mime_type")); // Set MIME type
+                    byte[] imageBytes = resultSet.getBytes("image");
+                    if (imageBytes != null) {
+                        String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                        product.setImageBase64(base64Image);
+                    }
+                    products.add(product);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return products;
+    }
 }
+
+

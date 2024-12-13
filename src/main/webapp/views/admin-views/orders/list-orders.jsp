@@ -10,11 +10,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orders</title>
+    <title>Order Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#10b981',
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
 
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-gray-50 text-gray-900">
 <%
     // Retrieve the session
     session = request.getSession();
@@ -49,64 +62,93 @@
 
 <div class="flex min-h-screen">
     <!-- Include Sidebar -->
-    <%@ include file="../static/admin-sidebar2.jsp" %>  <!-- Adjust path as necessary -->
+    <%@ include file="../static/admin-sidebar2.jsp" %>
 
-    <div class="container mx-auto py-8">
-        <h1 class="text-3xl font-bold text-gray-700 mb-4">Order Management</h1>
-        <div class="flex justify-end mb-4">
-            <a href="${pageContext.request.contextPath}/order?action=add" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Add New Order</a>
-        </div>
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <header class="bg-white shadow-sm z-10">
+            <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                <h1 class="text-2xl font-semibold text-gray-900">Order Management</h1>
+                <div class="flex items-center">
+                    <div class="relative mr-4">
+                        <input type="text" placeholder="Search orders..." class="w-64 pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary">
+                        <div class="absolute left-3 top-2.5 text-gray-400">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+                    <a href="${pageContext.request.contextPath}/order?action=add" class="bg-primary text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 flex items-center">
+                        <i class="fas fa-plus mr-2"></i> Add New Order
+                    </a>
+                </div>
+            </div>
+        </header>
 
-        <%
-            // Check if orders list is not empty
-            if (orders != null && !orders.isEmpty()) {
-        %>
-        <table class="w-full bg-white shadow-md rounded-lg table-auto">
-            <thead class="bg-gray-200">
-            <tr>
-                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Order ID</th>
-                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">User Name</th>
-                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Order Date</th>
-                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Status</th>
-                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <%
-                // Loop through the orders
-                for (Order order : orders) {
-                    // Get the user for the order
-                    User user = userMap.get(order.getUserId());
-            %>
-            <tr class="border-b hover:bg-gray-50">
-                <td class="px-4 py-3 text-sm"><%= order.getId() %></td>
-                <td class="px-4 py-3 text-sm">
-                    <%
-                        if (user != null) {
-                            out.print(user.getFullName());
-                        } else {
-                            out.print("<span class=\"text-gray-500\">Unknown user</span>");
-                        }
-                    %>
-                </td>
-                <td class="px-4 py-3 text-sm"><%= order.getDate() %></td>
-                <td class="px-4 py-3 text-sm"><%= order.getStatus() %></td>
-                <td class="px-4 py-3 text-sm">
-                    <a href="<%= request.getContextPath() + "/order?action=edit&id=" + order.getId() %>" class="text-blue-500 hover:text-blue-700">Edit</a>
-                    <a href="<%= request.getContextPath() + "/order?action=view&id=" + order.getId() %>" class="text-green-500 hover:text-red-700 ml-2">Show</a>
-                </td>
-            </tr>
-            <%
-                }
-            %>
-            </tbody>
-        </table>
-        <%
-            }
-        %>
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+            <div class="container mx-auto px-4 sm:px-8">
+                <div class="py-8">
+                    <div class="overflow-x-auto bg-white rounded-lg shadow overflow-y-auto relative">
+                        <table class="border-collapse table-auto w-full whitespace-no-wrap bg-white table-striped relative">
+                            <thead>
+                            <tr class="text-left">
+                                <th class="bg-gray-100 sticky top-0 border-b border-gray-200 px-6 py-3 text-gray-600 font-bold tracking-wider uppercase text-xs">Order ID</th>
+                                <th class="bg-gray-100 sticky top-0 border-b border-gray-200 px-6 py-3 text-gray-600 font-bold tracking-wider uppercase text-xs">User Name</th>
+                                <th class="bg-gray-100 sticky top-0 border-b border-gray-200 px-6 py-3 text-gray-600 font-bold tracking-wider uppercase text-xs">Order Date</th>
+                                <th class="bg-gray-100 sticky top-0 border-b border-gray-200 px-6 py-3 text-gray-600 font-bold tracking-wider uppercase text-xs">Status</th>
+                                <th class="bg-gray-100 sticky top-0 border-b border-gray-200 px-6 py-3 text-gray-600 font-bold tracking-wider uppercase text-xs">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <% for (Order order : orders) {
+                                User user = userMap.get(order.getUserId());
+                            %>
+                            <tr class="hover:bg-gray-50">
+                                <td class="border-b border-gray-200 px-6 py-4">
+                                    <div class="flex items-center">
+                                        <div class="text-sm font-medium text-gray-900">#<%= order.getId() %></div>
+                                    </div>
+                                </td>
+                                <td class="border-b border-gray-200 px-6 py-4">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full" src="https://www.gravatar.com/avatar/<%= user != null ? user.getEmail().toLowerCase().trim() : "" %>?s=200&d=mp" alt="<%= user != null ? user.getFullName() : "Unknown User" %>">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">
+                                                <%= user != null ? user.getFullName() : "<span class=\"text-gray-500\">Unknown user</span>" %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="border-b border-gray-200 px-6 py-4">
+                                    <div class="text-sm text-gray-900"><%= order.getDate() %></div>
+                                </td>
+                                <td class="border-b border-gray-200 px-6 py-4">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                            <%= order.getStatus().equalsIgnoreCase("completed") ? "bg-green-100 text-green-800" :
+                                               order.getStatus().equalsIgnoreCase("pending") ? "bg-yellow-100 text-yellow-800" :
+                                               "bg-red-100 text-red-800" %>">
+                                            <%= order.getStatus() %>
+                                        </span>
+                                </td>
+                                <td class="border-b border-gray-200 px-6 py-4 text-sm">
+                                    <a href="<%= request.getContextPath() + "/order?action=edit&id=" + order.getId() %>" class="text-primary hover:text-blue-800 mr-3">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <a href="<%= request.getContextPath() + "/order?action=view&id=" + order.getId() %>" class="text-green-600 hover:text-green-800">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 </div>
-</body>
-<%@ include file="../static/admin-footer.jsp" %> <!-- Adjust path as necessary -->
 
+<%@ include file="../static/admin-footer.jsp" %>
+
+</body>
 </html>
