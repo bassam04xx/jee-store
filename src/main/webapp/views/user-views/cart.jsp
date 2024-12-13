@@ -2,11 +2,14 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.ecommerce.ecommerce.models.OrderItem" %>
 <%@ page import="java.util.ArrayList" %>
+<%@ page import="com.ecommerce.ecommerce.dao.ProductDAO" %>
+<%@ page import="com.ecommerce.ecommerce.models.Product" %>
 <%
     List<OrderItem> cartItems = (List<OrderItem>) session.getAttribute("cart");
     if (cartItems == null) {
         cartItems = new ArrayList<>();
     }
+    ProductDAO productDAO = new ProductDAO();
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -55,16 +58,19 @@
             <table class="min-w-full leading-normal">
                 <thead>
                 <tr class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
-                    <th class="px-5 py-3 text-left text-sm font-semibold uppercase tracking-wider">Product ID</th>
+                    <th class="px-5 py-3 text-left text-sm font-semibold uppercase tracking-wider">Product Name</th>
                     <th class="px-5 py-3 text-left text-sm font-semibold uppercase tracking-wider">Quantity</th>
                     <th class="px-5 py-3 text-left text-sm font-semibold uppercase tracking-wider">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
-                <% for (OrderItem item : cartItems) { %>
+                <% for (OrderItem item : cartItems) {
+                    // Fetch product based on productId
+                    Product product = productDAO.getProductById(item.getProductId());
+                %>
                 <tr class="hover:bg-purple-50 transition-colors duration-200">
                     <td class="px-5 py-5 border-b border-gray-200 text-sm">
-                        <p class="font-semibold text-indigo-700">#<%= item.getProductId() %></p>
+                        <p class="font-semibold text-indigo-700"><%= product.getName() %></p>
                     </td>
                     <td class="px-5 py-5 border-b border-gray-200 text-sm">
                         <input type="number" name="quantity_<%= item.getProductId() %>" value="<%= item.getQuantity() %>" min="1" class="w-20 text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
@@ -83,7 +89,6 @@
                     <button type="submit" class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-6 py-2 rounded-lg hover:from-purple-600 hover:to-indigo-700 transition duration-300">
                         <i class="fas fa-sync-alt mr-2"></i>Update Cart
                     </button>
-
                 </div>
             </div>
         </form>

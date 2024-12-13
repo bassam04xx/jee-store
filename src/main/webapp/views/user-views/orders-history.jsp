@@ -1,16 +1,15 @@
 <%@ page import="com.ecommerce.ecommerce.models.Order" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.ecommerce.ecommerce.models.User" %>
+<%@ page import="com.ecommerce.ecommerce.dao.OrderDAO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%
     User currentUser = (User) session.getAttribute("currentUser");
-    List<Order> orders = (List<Order>) session.getAttribute("orders-his");
-    if (orders == null) {
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/order?action=orders-his");
-        dispatcher.forward(request, response);
-    }
+    OrderDAO orderDAO = new OrderDAO();
+    List<Order> orders = orderDAO.getOrdersByUserId(currentUser.getId());
+
     System.out.println("orders: " + orders);
 %>
 <!DOCTYPE html>
@@ -44,7 +43,8 @@
             </tr>
             </thead>
             <tbody>
-            <% for (Order order : orders) { %>
+            <% if (orders != null && !orders.isEmpty()) {
+            for (Order order : orders) { %>
             <tr class="hover:bg-purple-50 transition-colors duration-200">
                 <td class="px-5 py-5 border-b border-gray-200 text-sm">
                     <span class="font-semibold text-indigo-700">#<%= order.getId() %></span>
@@ -62,6 +62,24 @@
                 </td>
                 <td class="px-5 py-5 border-b border-gray-200 text-sm">
                     $<%= String.format("%.2f", order.getTotalPrice()) %>
+                </td>
+            </tr>
+            <% }} else { %>
+            <tr class="hover:bg-purple-50 transition-colors duration-200">
+                <td class="px-5 py-5 border-b border-gray-200 text-sm">
+                    <span class="font-semibold text-indigo-700">No orders found.</span>
+                </td>
+                <td class="px-5 py-5 border-b border-gray-200 text-sm">
+                    <span class="font-semibold text-indigo-700">No orders found.</span>
+                </td>
+                <td class="px-5 py-5 border-b border-gray-200 text-sm">
+                                <span class="px-3 py-1 rounded-full text-xs font-medium
+                                    bg-red-200 text-red-800">
+                                    No orders found.
+                                </span>
+                </td>
+                <td class="px-5 py-5 border-b border-gray-200 text-sm">
+                    $0.00
                 </td>
             </tr>
             <% } %>

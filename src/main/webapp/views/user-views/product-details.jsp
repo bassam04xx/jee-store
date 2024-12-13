@@ -36,28 +36,14 @@
 </head>
 <body class="bg-gradient-to-br from-purple-50 to-indigo-100 text-gray-900 min-h-screen flex flex-col">
 <!-- Navbar -->
-<nav class="bg-gradient-to-r from-purple-600 to-indigo-600 p-4 shadow-lg">
-  <div class="container mx-auto flex justify-between items-center">
-    <div class="text-white text-3xl font-bold tracking-wider">
-      <i class="fas fa-store mr-2"></i>J-Store
-    </div>
-    <div class="flex items-center space-x-4">
-      <a href="<%= request.getContextPath() %>/cart" class="text-white hover:text-yellow-300 transition duration-300 flex items-center">
-        <i class="fas fa-shopping-cart mr-2"></i>Cart
-      </a>
-      <a href="<%= request.getContextPath() %>/logout" class="text-white hover:text-yellow-300 transition duration-300 flex items-center">
-        <i class="fas fa-sign-out-alt mr-2"></i>Logout
-      </a>
-    </div>
-  </div>
-</nav>
+<%@ include file="./static/navbar.jsp" %>
 
 <!-- Main Content -->
 <main class="container mx-auto py-12 px-4 flex-grow">
   <% if (product != null) { %>
   <div class="bg-white shadow-xl rounded-lg overflow-hidden flex flex-col md:flex-row">
     <div class="md:w-1/2">
-      <img src="<%= request.getContextPath() + "/uploads/" + product.getImage() %>" alt="<%= product.getName() %>" class="w-full h-full object-cover">
+      <img src="data:<%= product.getMimeType() %>;base64,<%= product.getImageBase64() %>" alt="<%= product.getName() %>" class="w-full h-full object-cover">
     </div>
     <div class="md:w-1/2 p-8">
       <h2 class="text-4xl font-bold text-indigo-800 mb-4"><%= product.getName() %></h2>
