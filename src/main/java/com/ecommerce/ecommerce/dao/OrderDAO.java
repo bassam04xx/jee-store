@@ -23,7 +23,8 @@ public class OrderDAO {
                         resultSet.getInt("id"),
                         resultSet.getInt("user_id"),
                         resultSet.getDate("date"),
-                        resultSet.getString("status")
+                        resultSet.getString("status"),
+                        resultSet.getDouble("total_price")
                 ));
             }
         } catch (SQLException e) {
@@ -71,7 +72,9 @@ public class OrderDAO {
                             resultSet.getInt("id"),
                             resultSet.getInt("user_id"),
                             resultSet.getDate("date"),
-                            resultSet.getString("status")
+                            resultSet.getString("status"),
+                            resultSet.getDouble("total_price")
+
                     );
                 }
             }
@@ -133,7 +136,8 @@ public class OrderDAO {
                             resultSet.getInt("id"),
                             resultSet.getInt("user_id"),
                             resultSet.getDate("date"),
-                            resultSet.getString("status")
+                            resultSet.getString("status"),
+                            resultSet.getDouble("total_price")
                     ));
                 }
             }
@@ -160,7 +164,8 @@ public class OrderDAO {
                             resultSet.getInt("id"),
                             resultSet.getInt("user_id"),
                             resultSet.getDate("date"),
-                            resultSet.getString("status")
+                            resultSet.getString("status"),
+                            resultSet.getDouble("total_price")
                     ));
                 }
             }
@@ -192,4 +197,18 @@ public class OrderDAO {
         return count;
     }
 
+    public void updateOrderPrice(int id , double price) {
+        String sql = "UPDATE orders SET total_price = ? WHERE id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setDouble(1, price);
+            preparedStatement.setInt(2, id);
+            int rowsAffected = preparedStatement.executeUpdate();
+            System.out.println("Rows affected: " + rowsAffected);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -17,94 +17,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J-Store - Products</title>
+    <title>J-Store - Discover Amazing Products</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .product-card {
+            transition: all 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
-<body class="bg-gray-100 text-gray-900">
+<body class="bg-gradient-to-br from-purple-50 to-indigo-100 text-gray-900 min-h-screen flex flex-col">
 <!-- Navbar -->
-<nav class="bg-gradient-to-r from-blue-900 to-blue-600 p-4">
-    <div class="container mx-auto flex justify-between items-center">
-        <div class="text-white text-2xl font-bold">
-            J-Store
-        </div>
-        <div>
-            <a href="<%= request.getContextPath() %>/views/user-views/cart.jsp" class="text-white hover:text-blue-200 mx-2">Cart</a>
-            <a href="<%= request.getContextPath() %>/logout" class="text-white hover:text-blue-200 mx-2">Logout</a>
-        </div>
-    </div>
-</nav>
 
+<%@ include file="./static/navbar.jsp" %>
 <!-- Main Content -->
-<main class="container mx-auto py-8">
-    <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Shop Our Collection</h2>
+<main class="container mx-auto py-12 flex-grow">
+    <h2 class="text-4xl font-bold text-indigo-800 mb-8 text-center">Discover Amazing Products</h2>
     <% if (products != null && !products.isEmpty()) { %>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         <% for (Product product : products) { %>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-transform transform hover:scale-105">
-            <div class="w-full h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
-                <img src="data:<%= product.getMimeType() %>;base64,<%= product.getImageBase64() %>"
-                     alt="<%= product.getName() %>"
-                     class="object-contain h-full w-full">
+        <div class="product-card bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl">
+            <div class="relative">
+                <img src="data:<%= product.getMimeType() %>;base64,<%= product.getImageBase64() %>" alt="<%= product.getName() %>" class="w-full h-48 object-cover">
+                <div class="absolute top-0 right-0 bg-yellow-400 text-indigo-900 font-semibold px-3 py-1 rounded-bl-lg">
+                    $<%= String.format("%.2f", product.getPrice()) %>
+                </div>
             </div>
             <div class="p-5">
-                <h3 class="text-xl font-semibold text-gray-800 truncate"><%= product.getName() %></h3>
-                <p class="text-sm text-gray-500 mt-2 line-clamp-2"><%= product.getDescription() %></p>
-                <p class="text-lg font-bold text-green-600 mt-4">$<%= product.getPrice() %></p>
-                <button
-                        class="add-to-cart flex items-center justify-center bg-green-500 text-white px-4 py-2 w-full rounded-lg shadow-lg hover:bg-green-600 focus:ring-2 focus:ring-blue-500 focus:outline-none mt-4"
-                        data-id="<%= product.getId() %>"
-                        data-name="<%= product.getName() %>"
-                        data-price="<%= product.getPrice() %>">
-                    <i class="fas fa-cart-plus mr-2"></i>Add to Cart
-                </button>
+                <h3 class="text-xl font-semibold text-indigo-800 mb-2"><%= product.getName() %></h3>
+                <p class="text-gray-600 mb-4"><%= product.getDescription() %></p>
+                <form action="<%= request.getContextPath() %>/orderItem" method="post" class="flex items-center justify-between">
+                    <input type="hidden" name="action" value="addProductToCart">
+                    <input type="hidden" name="productId" value="<%= product.getId() %>">
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit" class="flex-grow bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-4 py-2 rounded-lg shadow-md hover:from-purple-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105">
+                        <i class="fas fa-cart-plus mr-2"></i>Add to Cart
+                    </button>
+                </form>
+
+                <buttton type="button" class=" my-4 w-full flex-grow bg-gradient-to-r from-green-500 to-blue-500 text-center text-white px-4 py-2 rounded-lg shadow-md hover:from-purple-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105">
+                    <a href="<%= request.getContextPath() %>/product?action=details&id=<%= product.getId() %>" class="text-white text-center">
+                        <i class="fas fa-info-circle mr-2"></i>More Info
+                    </a>
+                </buttton>
             </div>
         </div>
         <% } %>
     </div>
     <% } else { %>
-    <p class="text-gray-600 text-center">No products are available at the moment.</p>
+    <div class="text-center py-12">
+        <i class="fas fa-box-open text-6xl text-gray-400 mb-4"></i>
+        <p class="text-xl text-gray-600">Oops! It looks like our shelves are empty at the moment.</p>
+        <p class="text-gray-500 mt-2">Check back soon for exciting new products!</p>
+    </div>
     <% } %>
 </main>
 
 <!-- Footer -->
-<footer class="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-4 mt-8">
-    <div class="container mx-auto text-center">
-        <p>&copy; 2024 J-Store. All rights reserved.</p>
-    </div>
-</footer>
+
+<%@ include file="./static/footer.jsp" %>
 
 <!-- JavaScript for Cart Management -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const cartButtons = document.querySelectorAll('.add-to-cart');
+        const cartButtons = document.querySelectorAll('form[action$="/cart"]');
 
-        cartButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                // Get product details from data attributes
-                const productId = button.getAttribute('data-id');
-                const productName = button.getAttribute('data-name');
-                const productPrice = parseFloat(button.getAttribute('data-price'));
+        cartButtons.forEach(form => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
 
-                // Get current cart from localStorage or initialize it
+                const productId = form.querySelector('input[name="productId"]').value;
+                const productName = form.closest('.product-card').querySelector('h3').textContent;
+                const productPrice = parseFloat(form.closest('.product-card').querySelector('.bg-yellow-400').textContent.replace('$', ''));
+
                 let cart = JSON.parse(localStorage.getItem('current-order')) || [];
 
-                // Check if product is already in the cart
                 const productIndex = cart.findIndex(item => item.id === productId);
 
                 if (productIndex !== -1) {
-                    // If product exists, increment the quantity
                     cart[productIndex].quantity += 1;
                 } else {
-                    // Add new product with default quantity of 1
                     cart.push({ id: productId, name: productName, price: productPrice, quantity: 1 });
                 }
 
-                // Save the updated cart to localStorage
                 localStorage.setItem('current-order', JSON.stringify(cart));
 
-                // Provide feedback to the user
-                alert(`${productName} added to the cart.`);
+                const notification = document.createElement('div');
+                notification.textContent = `${productName} added to the cart.`;
+                notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transition-opacity duration-500 opacity-0';
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    notification.classList.remove('opacity-0');
+                }, 100);
+
+                setTimeout(() => {
+                    notification.classList.add('opacity-0');
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 500);
+                }, 3000);
             });
         });
     });

@@ -27,36 +27,47 @@
   <title>Product Details - J-Store</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-900">
+<body class="bg-gradient-to-br from-purple-50 to-indigo-100 text-gray-900 min-h-screen flex flex-col">
 <!-- Navbar -->
-<nav class="bg-gradient-to-r from-blue-900 to-blue-600 p-4">
+<nav class="bg-gradient-to-r from-purple-600 to-indigo-600 p-4 shadow-lg">
   <div class="container mx-auto flex justify-between items-center">
-    <div class="text-white text-2xl font-bold">
-      J-Store
+    <div class="text-white text-3xl font-bold tracking-wider">
+      <i class="fas fa-store mr-2"></i>J-Store
     </div>
-    <div>
-      <a href="<%= request.getContextPath() %>/cart" class="text-white hover:text-blue-200 mx-2">Cart <i class="fas fa-shopping-cart"></i></a>
-      <a href="<%= request.getContextPath() %>/logout" class="text-white hover:text-blue-200 mx-2">Logout</a>
+    <div class="flex items-center space-x-4">
+      <a href="<%= request.getContextPath() %>/cart" class="text-white hover:text-yellow-300 transition duration-300 flex items-center">
+        <i class="fas fa-shopping-cart mr-2"></i>Cart
+      </a>
+      <a href="<%= request.getContextPath() %>/logout" class="text-white hover:text-yellow-300 transition duration-300 flex items-center">
+        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+      </a>
     </div>
   </div>
 </nav>
 
 <!-- Main Content -->
-<main class="container mx-auto py-12">
+<main class="container mx-auto py-12 px-4 flex-grow">
   <% if (product != null) { %>
-  <div class="flex flex-col md:flex-row bg-white shadow-lg rounded-lg overflow-hidden">
+  <div class="bg-white shadow-xl rounded-lg overflow-hidden flex flex-col md:flex-row">
     <div class="md:w-1/2">
       <img src="<%= request.getContextPath() + "/uploads/" + product.getImage() %>" alt="<%= product.getName() %>" class="w-full h-full object-cover">
     </div>
     <div class="md:w-1/2 p-8">
-      <h2 class="text-4xl font-bold text-gray-800"><%= product.getName() %></h2>
-      <p class="text-gray-600 mt-4"><%= product.getDescription() %></p>
-      <div class="text-2xl text-gray-800 font-bold mt-5">$<%= product.getPrice() %></div>
+      <h2 class="text-4xl font-bold text-indigo-800 mb-4"><%= product.getName() %></h2>
+      <p class="text-gray-600 mb-6"><%= product.getDescription() %></p>
+      <div class="text-3xl font-bold text-purple-600 mb-6">$<%= String.format("%.2f", product.getPrice()) %></div>
+
       <!-- Counter Section -->
-      <div class="mt-6 flex items-center">
-        <button id="decreaseQuantity" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-l hover:bg-gray-400 focus:outline-none">
-          -
+      <div class="flex items-center mb-6">
+        <button id="decreaseQuantity" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-l-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500">
+          <i class="fas fa-minus"></i>
         </button>
         <input
                 id="quantity"
@@ -65,38 +76,54 @@
                 min="1"
                 max="<%= product.getStock() %>"
                 readonly
-                class="w-12 text-center border-t border-b border-gray-300 focus:outline-none">
-        <button id="increaseQuantity" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-r hover:bg-gray-400 focus:outline-none">
-          +
+                class="w-16 text-center border-t border-b border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+        <button id="increaseQuantity" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-r-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500">
+          <i class="fas fa-plus"></i>
         </button>
         <p class="ml-4 text-sm text-gray-600">Stock: <%= product.getStock() %></p>
       </div>
 
-      <div class="flex items-center mt-6">
-        <form action="<%= request.getContextPath() %>/orderItem" method="POST">
+      <div class="flex flex-col sm:flex-row items-center gap-4">
+        <form action="<%= request.getContextPath() %>/orderItem" method="POST" class="w-full sm:w-auto">
           <input type="hidden" name="action" value="addProductToCart">
           <input type="hidden" name="productId" value="<%= product.getId() %>">
           <input type="hidden" id="formQuantity" name="quantity" value="1">
-          <button type="submit" class="flex items-center justify-center bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none mr-4">
+          <button type="submit" class="w-full sm:w-auto flex items-center justify-center bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-6 py-3 rounded-lg shadow-lg hover:from-purple-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300">
             <i class="fas fa-cart-plus mr-2"></i>Add to Cart
           </button>
         </form>
-        <a href="<%= request.getContextPath() %>/views/user-views/index.jsp" class="flex items-center justify-center bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-green-600 focus:ring-2 focus:ring-green-500 focus:outline-none">
+        <a href="<%= request.getContextPath() %>/views/user-views/index.jsp" class="w-full sm:w-auto flex items-center justify-center bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg shadow-lg hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300">
           <i class="fas fa-arrow-left mr-2"></i>Continue Shopping
         </a>
       </div>
-      <hr class="my-8">
     </div>
   </div>
   <% } else { %>
-  <p class="text-gray-600 text-center mt-16">Product not found.</p>
+  <div class="text-center py-12">
+    <i class="fas fa-exclamation-triangle text-6xl text-yellow-500 mb-4"></i>
+    <p class="text-2xl text-gray-700">Product not found.</p>
+    <a href="<%= request.getContextPath() %>/views/user-views/index.jsp" class="mt-6 inline-block bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-6 py-3 rounded-lg shadow-lg hover:from-purple-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300">
+      Return to Shop
+    </a>
+  </div>
   <% } %>
 </main>
 
 <!-- Footer -->
-<footer class="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-4 mt-12">
+<footer class="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-6">
   <div class="container mx-auto text-center">
     <p>&copy; 2024 J-Store. All rights reserved.</p>
+    <div class="mt-4 flex justify-center space-x-4">
+      <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+        <i class="fab fa-facebook-f"></i>
+      </a>
+      <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+        <i class="fab fa-twitter"></i>
+      </a>
+      <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+        <i class="fab fa-instagram"></i>
+      </a>
+    </div>
   </div>
 </footer>
 
