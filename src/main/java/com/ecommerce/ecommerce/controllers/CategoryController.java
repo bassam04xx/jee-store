@@ -69,7 +69,7 @@ public class CategoryController extends HttpServlet {
                     if ("client".equals(request.getAttribute("Type"))) {
                         request.getRequestDispatcher("/views/user-views/index.jsp").forward(request, response);
                     } else {
-                        request.getRequestDispatcher("/views/admin-views/index.jsp").forward(request, response);
+                        request.getRequestDispatcher("/views/admin-views/index.jsp").forward(request, response); // Redirect to admin dashboard
                     }
                     break;
             }

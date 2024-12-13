@@ -252,6 +252,8 @@ public class UserController extends HttpServlet {
         String action = request.getParameter("action");
 
         switch (action) {
+            case "add":
+                request.getRequestDispatcher("/views/admin-views/users/add-user.jsp").forward(request, response);
             case "list":
                 handleList(request, response);
                 break;
@@ -298,4 +300,7 @@ public class UserController extends HttpServlet {
 
         response.sendRedirect("/views/login.jsp"); // Redirect to login page
     }
+
 }
+
+    

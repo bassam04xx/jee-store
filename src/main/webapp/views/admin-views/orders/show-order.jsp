@@ -6,7 +6,6 @@
 <%@ page import="com.ecommerce.ecommerce.models.Product" %>
 <%-- Created by IntelliJ IDEA. --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="../static/admin-sidebar.jsp" %>
 <%
   Order order = (Order) request.getAttribute("order");
   if (order == null) {
@@ -19,20 +18,28 @@
 
 %>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Order Number: <%= order.getId() %></title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.3/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100">
-<div class="flex">
 
-  <div class="w-3/4 p-8">
-    <h1 class="text-3xl font-bold text-gray-800">Order Number: <%= order.getId() %></h1>
-    <h2 class="text-xl text-gray-600">Order Date: <%= order.getDate() %></h2>
-    <h2 class="text-xl text-gray-600 mb-6">Order Status: <%= order.getStatus() %></h2>
+<body class="bg-gray-100 text-gray-800">
+<div class="flex min-h-screen">
+  <!-- Include Sidebar -->
+  <%@ include file="../static/admin-sidebar2.jsp" %>  <!-- Adjust path as necessary -->
 
+  <div class="container mx-auto py-8 w-full">
+    <!-- Page Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-700">Order Number: <%= order.getId() %></h1>
+      <p class="text-gray-600 mt-2">Details of the order placed on <%= order.getDate() %></p>
+      <p class="text-gray-600 mt-2">Current Status: <%= order.getStatus() %></p>
+    </div>
+
+    <!-- Order Items Table -->
     <% if (orderItems.isEmpty()) { %>
     <p class="text-red-500">No items in this order.</p>
     <% } else { %>
@@ -49,18 +56,47 @@
       <% for (OrderItem item : orderItems) { %>
       <tr class="border-b">
         <td class="px-4 py-2 text-sm text-gray-700"><%= item.getOrderId() %></td>
-        <td class="px-4 py-2 text-sm text-gray-700"><%
-        Product product =productDAO.getProductById(item.getProductId());
-        %><%= product.getName() %></td>
+        <td class="px-4 py-2 text-sm text-gray-700">
+          <%
+            Product product = productDAO.getProductById(item.getProductId());
+          %>
+          <%= product.getName() %>
+        </td>
         <td class="px-4 py-2 text-sm text-gray-700"><%= item.getQuantity() %></td>
-        <td class="px-4 py-2 text-sm text-gray-700"><%=
-        product.getPrice()*item.getQuantity() %></td>
+        <td class="px-4 py-2 text-sm text-gray-700"><%= product.getPrice() * item.getQuantity() %></td>
       </tr>
       <% } %>
       </tbody>
     </table>
     <% } %>
+
+    <!-- Update Order Status Form -->
+    <form action="${pageContext.request.contextPath}/order?action=edit" method="post" class="bg-white shadow-md rounded-lg p-8 space-y-6 mt-8">
+      <!-- Hidden Order ID -->
+      <input type="hidden" name="id" value="${order.id}">
+
+      <!-- Order Status -->
+      <div>
+        <label for="status" class="block text-gray-700 font-semibold mb-2">Order Status</label>
+        <select id="status" name="status" class="w-full border border-gray-300 px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          <option value="PENDING" ${order.status == 'PENDING' ? 'selected' : ''}>Pending</option>
+          <option value="SHIPPED" ${order.status == 'SHIPPED' ? 'selected' : ''}>Shipped</option>
+          <option value="DELIVERED" ${order.status == 'DELIVERED' ? 'selected' : ''}>Delivered</option>
+          <option value="CANCELLED" ${order.status == 'CANCELLED' ? 'selected' : ''}>Cancelled</option>
+        </select>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="text-right">
+        <button type="submit" class="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300">
+          Update Status
+        </button>
+      </div>
+    </form>
   </div>
 </div>
+
+<%@ include file="../static/admin-footer.jsp" %> <!-- Adjust path as necessary -->
 </body>
+
 </html>

@@ -3,8 +3,8 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.ecommerce.ecommerce.models.Category" %>
 <%@ page import="com.ecommerce.ecommerce.models.Order" %>
+<%@ page import="com.ecommerce.ecommerce.dao.CategoryDAO" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ include file="./static/admin-sidebar.jsp" %> <!-- Include Sidebar -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -16,7 +16,6 @@
 </head>
 
 <body class="bg-gray-100 text-gray-800">
-
 <%
 
   // Retrieve session object
@@ -26,6 +25,11 @@
   List<Product> products = (List<Product>) session.getAttribute("products");
   List<User> users = (List<User>) session.getAttribute("users");
   List<Category> categories = (List<Category>) session.getAttribute("categories");
+  CategoryDAO categoryDAO = new CategoryDAO();
+  if (categories != null) {
+    categories = categoryDAO.getAllCategories();
+    session.setAttribute("categories", categories);
+  }
   List<Order> orders = (List<Order>) session.getAttribute("orders");
   if (products == null) {
     response.sendRedirect(request.getContextPath() + "/product?action=list");
@@ -40,169 +44,145 @@
     response.sendRedirect(request.getContextPath() + "/order?action=list");
     return; // Stop further processing
   }
+
 %>
+<div class="flex min-h-screen">
+  <!-- Sidebar -->
+  <%@include file="static/admin-sidebar2.jsp"%>
 
-<div class="flex">
-  <!-- Main Content Section -->
+  <!-- Main Content -->
   <main class="flex-1 p-8">
-    <div class="mb-8" id="products">
+    <!-- Products Section -->
+    <div id="products" class="mb-8">
       <h1 class="text-3xl font-bold text-gray-700">Product Management</h1>
-      <p class="text-gray-600 mt-2">Manage products, edit, delete, or add new products to your catalog.</p>
-    </div>
-
-    <!-- Add Product Button -->
-    <div class="mb-4 text-right">
-      <a href="${pageContext.request.contextPath}/product?action=add" class="bg-blue-500 text-white py-2 px-4 rounded-lg shadow-lg hover:bg-blue-600 transition duration-300">Add New Product</a>
-    </div>
-
-    <!-- Product Table -->
-    <c:if test="${!empty products}">
-      <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
-        <thead>
-        <tr class="bg-gray-200 text-gray-700">
-          <th class="px-6 py-3 text-left">Product Name</th>
-          <th class="px-6 py-3 text-left">Description</th>
-          <th class="px-6 py-3 text-left">Price</th>
-          <th class="px-6 py-3 text-left">Stock</th>
-          <th class="px-6 py-3 text-left">Image</th>
-          <th class="px-6 py-3 text-left">Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <c:forEach var="product" items="${products}">
-          <tr class="border-b hover:bg-gray-50">
-            <td class="px-6 py-3">${product.name}</td>
-            <td class="px-6 py-3">${product.description}</td>
-            <td class="px-6 py-3">${product.price}</td>
-            <td class="px-6 py-3">${product.stock}</td>
-            <td class="px-6 py-3">
-              <img src="data:${product.mimeType};base64,${product.imageBase64}" alt="${product.name}" class="w-32 h-32 object-cover rounded-md">
-            </td>
-            <td class="px-6 py-3">
-              <a href="${pageContext.request.contextPath}/product?action=edit&id=${product.id}" class="text-blue-500 hover:text-blue-700 px-4 py-2 rounded-md">Edit</a>
-              <a href="${pageContext.request.contextPath}/product?action=delete&id=${product.id}" class="text-red-500 hover:text-red-700 px-4 py-2 rounded-md">Delete</a>
-            </td>
+      <div class="flex justify-end mb-4">
+        <a href="${pageContext.request.contextPath}/product?action=add" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Add New Product</a>
+      </div>
+      <c:if test="${!empty products}">
+        <table class="w-full bg-white shadow-md rounded-lg">
+          <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2">Product Name</th>
+            <th class="px-4 py-2">Description</th>
+            <th class="px-4 py-2">Price</th>
+            <th class="px-4 py-2">Stock</th>
+            <th class="px-4 py-2">Actions</th>
           </tr>
-        </c:forEach>
-        </tbody>
-      </table>
-    </c:if>
+          </thead>
+          <tbody>
+          <c:forEach var="product" items="${products}">
+            <tr class="border-b hover:bg-gray-50">
+              <td class="px-4 py-2">${product.name}</td>
+              <td class="px-4 py-2">${product.description}</td>
+              <td class="px-4 py-2">${product.price}</td>
+              <td class="px-4 py-2">${product.stock}</td>
+              <td class="px-4 py-2">
+                <a href="${pageContext.request.contextPath}/product?action=edit&id=${product.id}" class="text-blue-500">Edit</a>
+                <a href="${pageContext.request.contextPath}/product?action=delete&id=${product.id}" class="text-red-500 ml-2">Delete</a>
+              </td>
+            </tr>
+          </c:forEach>
+          </tbody>
+        </table>
+      </c:if>
+    </div>
 
-    <!-- Category Management Section -->
-    <div class="mb-8 mt-10" id="categories" >
+    <!-- Categories Section -->
+    <div id="categories" class="mb-8">
       <h1 class="text-3xl font-bold text-gray-700">Category Management</h1>
-      <p class="text-gray-600 mt-2">Manage categories, edit, delete, or add new categories to your catalog.</p>
-    </div>
-
-    <!-- Add Category Button -->
-    <div class="mb-4 text-right">
-      <a href="${pageContext.request.contextPath}/category?action=add" class="bg-blue-500 text-white py-2 px-4 rounded-lg shadow-lg hover:bg-blue-600 transition duration-300">Add New Category</a>
-    </div>
-
-    <!-- Category Table -->
-    <c:if test="${!empty categories}">
-      <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
-        <thead>
-        <tr class="bg-gray-200 text-gray-700">
-          <th class="px-6 py-3 text-left">Category Name</th>
-          <th class="px-6 py-3 text-left">Description</th>
-          <th class="px-6 py-3 text-left">Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <c:forEach var="category" items="${categories}">
-          <tr class="border-b hover:bg-gray-50">
-            <td class="px-6 py-3">${category.name}</td>
-            <td class="px-6 py-3">${category.description}</td>
-            <td class="px-6 py-3">
-              <a href="${pageContext.request.contextPath}/category?action=edit&id=${category.id}" class="text-blue-500 hover:text-blue-700 px-4 py-2 rounded-md">Edit</a>
-              <a href="${pageContext.request.contextPath}/category?action=delete&id=${category.id}" class="text-red-500 hover:text-red-700 px-4 py-2 rounded-md">Delete</a>
-            </td>
+      <div class="flex justify-end mb-4">
+        <a href="${pageContext.request.contextPath}/category?action=add" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Add New Category</a>
+      </div>
+      <c:if test="${!empty categories}">
+        <table class="w-full bg-white shadow-md rounded-lg">
+          <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2">Category Name</th>
+            <th class="px-4 py-2">Description</th>
+            <th class="px-4 py-2">Actions</th>
           </tr>
-        </c:forEach>
-        </tbody>
-      </table>
-    </c:if>
-
-    <!-- User Management Section -->
-    <div class="mb-8 mt-10" id="users" >
-      <h1 class="text-3xl font-bold text-gray-700">User Management</h1>
-      <p class="text-gray-600 mt-2">Manage users, edit, delete, or add new users to your catalog.</p>
+          </thead>
+          <tbody>
+          <c:forEach var="category" items="${categories}">
+            <tr class="border-b hover:bg-gray-50">
+              <td class="px-4 py-2">${category.name}</td>
+              <td class="px-4 py-2">${category.description}</td>
+              <td class="px-4 py-2">
+                <a href="${pageContext.request.contextPath}/category?action=edit&id=${category.id}" class="text-blue-500">Edit</a>
+                <a href="${pageContext.request.contextPath}/category?action=delete&id=${category.id}" class="text-red-500 ml-2">Delete</a>
+              </td>
+            </tr>
+          </c:forEach>
+          </tbody>
+        </table>
+      </c:if>
     </div>
 
-    <!-- Add User Button -->
-    <div class="mb-4 text-right">
-      <a href="${pageContext.request.contextPath}/views/admin-views/users/add-user.jsp" class="bg-blue-500 text-white py-2 px-4 rounded-lg shadow-lg hover:bg-blue-600 transition duration-300">Add New User</a>
+    <!-- Add sections for Users and Orders similarly -->
+
+    <--! User Section !-->
+    <div class="mt-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">Users</h2>
+      <c:if test="${not empty users}">
+        <table class="w-full text-sm text-left text-gray-500 mt-4">
+          <thead>
+            <tr class="border-b border-gray-200">
+              <th class="px-4 py-2">Username</th>
+              <th class="px-4 py-2">Email</th>
+              <th class="px-4 py-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <c:forEach items="${users}" var="user">
+              <tr class="border-b border-gray-200">
+                <td class="px-4 py-2">${user.username}</td>
+                <td class="px-4 py-2">${user.email}</td>
+                <td class="px-4 py-2">
+                  <a href="${pageContext.request.contextPath}/user?action=edit&id=${user.id}" class="text-blue-500 ml-2">Edit</a>
+                  <a href="${pageContext.request.contextPath}/user?action=delete&id=${user.id}" class="text-red-500 ml-2">Delete</a>
+                </td>
+              </tr>
+            </c:forEach>
+          </tbody>
+        </table>
+      </c:if>
     </div>
 
-    <!-- User Table -->
-    <c:if test="${!empty users}">
-      <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
-        <thead>
-        <tr class="bg-gray-200 text-gray-700">
-          <th class="px-6 py-3 text-left">Username</th>
-          <th class="px-6 py-3 text-left">Full Name</th>
-          <th class="px-6 py-3 text-left">Role</th>
-          <th class="px-6 py-3 text-left">Status</th>
-          <th class="px-6 py-3 text-left">Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <c:forEach var="user" items="${users}">
-          <tr class="border-b hover:bg-gray-50">
-            <td class="px-6 py-3">${user.username}</td>
-            <td class="px-6 py-3">${user.fullName}</td>
-            <td class="px-6 py-3">${user.type}</td>
-            <td class="px-6 py-3">${user.status}</td>
-            <td class="px-6 py-3">
-              <a href="${pageContext.request.contextPath}/user?action=edit&id=${user.id}" class="text-blue-500 hover:text-blue-700 px-4 py-2 rounded-md">Edit</a>
-              <a href="${pageContext.request.contextPath}/user?action=delete&id=${user.id}" class="text-red-500 hover:text-red-700 px-4 py-2 rounded-md">Delete</a>
-            </td>
-          </tr>
-        </c:forEach>
-        </tbody>
-      </table>
-    </c:if>
-
-    <!-- Orders Management Section -->
-    <div class="mb-8 mt-10" id="orders" >
-      <h1 class="text-3xl font-bold text-gray-700">Order Management</h1>
-      <p class="text-gray-600 mt-2">Manage orders, edit statuses, and view order details.</p>
+    <--! Order Section !-->
+    <div class="mt-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">Orders</h2>
+      <c:if test="${not empty orders}">
+        <table class="w-full text-sm text-left text-gray-500 mt-4">
+          <thead>
+            <tr class="border-b border-gray-200">
+              <th class="px-4 py-2">Order ID</th>
+              <th class="px-4 py-2">Username</th>
+              <th class="px-4 py-2">Email</th>
+              <th class="px-4 py-2">Total</th>
+              <th class="px-4 py-2">Status</th>
+              <th class="px-4 py-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <c:forEach items="${orders}" var="order">
+              <tr class="border-b border-gray-200">
+                <td class="px-4 py-2">${order.orderId}</td>
+                <td class="px-4 py-2">${order.username}</td>
+                <td class="px-4 py-2">${order.email}</td>
+                <td class="px-4 py-2">${order.total}</td>
+                <td class="px-4 py-2">${order.status}</td>
+                <td class="px-4 py-2">
+                  <a href="${pageContext.request.contextPath}/order?action=edit&id=${order.id}" class="text-blue-500 ml-2">Edit</a>
+                  <a href="${pageContext.request.contextPath}/order?action=delete&id=${order.id}" class="text-red-500 ml-2">Delete</a>
+                </td>
+              </tr>
+            </c:forEach>
+          </tbody>
+        </table>
+      </c:if>
     </div>
-
-    <!-- Orders Table -->
-    <c:if test="${!empty orders}">
-      <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
-        <thead>
-        <tr class="bg-gray-200 text-gray-700">
-          <th class="px-6 py-3 text-left">Order ID</th>
-          <th class="px-6 py-3 text-left">User ID</th>
-          <th class="px-6 py-3 text-left">Date</th>
-          <th class="px-6 py-3 text-left">Status</th>
-          <th class="px-6 py-3 text-left">Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <c:forEach var="order" items="${orders}">
-          <tr class="border-b hover:bg-gray-50">
-            <td class="px-6 py-3">${order.id}</td>
-            <td class="px-6 py-3">${order.userId}</td>
-            <td class="px-6 py-3">${order.date}</td>
-            <td class="px-6 py-3">${order.status}</td>
-            <td class="px-6 py-3">
-              <a href="${pageContext.request.contextPath}/order?action=edit&id=${order.id}" class="text-blue-500 hover:text-blue-700 px-4 py-2 rounded-md">Edit</a>
-              <a href="${pageContext.request.contextPath}/order?action=view&id=${order.id}" class="text-green-500 hover:text-green-700 px-4 py-2 rounded-md">Show</a>
-            </td>
-          </tr>
-        </c:forEach>
-        </tbody>
-      </table>
-    </c:if>
   </main>
 </div>
-
-<!-- Footer Section -->
-<%@ include file="./static/admin-footer.jsp" %> <!-- Include Footer -->
-
 </body>
+
 </html>
