@@ -3,13 +3,6 @@
 <%@ page import="com.ecommerce.ecommerce.models.Product" %>
 <%@ page import="com.ecommerce.ecommerce.dao.ProductDAO" %>
 <%
-//    if (request.getAttribute("products") == null) {
-//        String userType = "client";
-//        request.setAttribute("Type", userType);
-//        RequestDispatcher dispatcher = request.getRequestDispatcher("/product?action=list");
-//        dispatcher.forward(request, response);
-//    }
-//    List<Product> products = (List<Product>) request.getAttribute("products");
     session = request.getSession();
     List<Product> products = (List<Product>) session.getAttribute("products");
 
@@ -49,17 +42,22 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         <% for (Product product : products) { %>
         <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-transform transform hover:scale-105">
-            <img src="data:<%= product.getMimeType() %>;base64,<%= product.getImageBase64() %>" alt="<%= product.getName() %>" class="w-32 h-32 object-cover rounded-md">
+            <div class="w-full h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
+                <img src="data:<%= product.getMimeType() %>;base64,<%= product.getImageBase64() %>"
+                     alt="<%= product.getName() %>"
+                     class="object-contain h-full w-full">
+            </div>
             <div class="p-5">
-                <h3 class="text-xl font-semibold text-gray-800"><%= product.getName() %></h3>
-                <p class="text-gray-600 mt-2"><%= product.getDescription() %></p>
-                     <input type="hidden" name="productId" value="<%= product.getId() %>">
-                        <input type="hidden" id="formQuantity" name="quantity" value="1">
-                        <button type="submit" class="flex items-center justify-center bg-green-500 text-white px-4 py-2 w-full rounded-lg shadow-lg hover:bg-green-600 focus:ring-2 focus:ring-blue-500 focus:outline-none mr-4">
-                            <i class="fas fa-cart-plus mr-2"></i>Add to Cart
-                        </button>
-                    </form>
-                </div>
+                <h3 class="text-xl font-semibold text-gray-800 truncate"><%= product.getName() %></h3>
+                <p class="text-sm text-gray-500 mt-2 line-clamp-2"><%= product.getDescription() %></p>
+                <p class="text-lg font-bold text-green-600 mt-4">$<%= product.getPrice() %></p>
+                <button
+                        class="add-to-cart flex items-center justify-center bg-green-500 text-white px-4 py-2 w-full rounded-lg shadow-lg hover:bg-green-600 focus:ring-2 focus:ring-blue-500 focus:outline-none mt-4"
+                        data-id="<%= product.getId() %>"
+                        data-name="<%= product.getName() %>"
+                        data-price="<%= product.getPrice() %>">
+                    <i class="fas fa-cart-plus mr-2"></i>Add to Cart
+                </button>
             </div>
         </div>
         <% } %>
@@ -69,9 +67,8 @@
     <% } %>
 </main>
 
-
 <!-- Footer -->
-<footer class=" bottom-0 bg-gradient-to-r from-gray-900 to-gray-800 text-white py-4 mt-8">
+<footer class="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-4 mt-8">
     <div class="container mx-auto text-center">
         <p>&copy; 2024 J-Store. All rights reserved.</p>
     </div>

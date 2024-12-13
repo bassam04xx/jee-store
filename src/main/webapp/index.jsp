@@ -1,4 +1,18 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="com.ecommerce.ecommerce.models.Product" %>
+<%@ page import="com.ecommerce.ecommerce.dao.ProductDAO" %>
+<%
+    session = request.getSession();
+    List<Product> products = (List<Product>) session.getAttribute("products");
+
+    if (products == null) {
+        ProductDAO productDAO = new ProductDAO();
+        products = productDAO.getAllProducts();
+        session.setAttribute("products", products);
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,6 +44,51 @@
         <p class="text-gray-600 mt-4 text-lg">Your portal to a futuristic shopping experience</p>
     </div>
 </section>
+
+<!-- All Products Section -->
+<section class="bg-gray-50 py-20">
+    <div class="container mx-auto px-6 lg:px-20">
+        <h2 class="text-4xl font-bold text-gray-800 mb-10 text-center">Discover Our Exclusive Collection</h2>
+        <p class="text-gray-600 text-lg mb-16 text-center">Explore a wide range of products tailored to meet your needs. Shop now and experience the difference!</p>
+
+        <% if (products != null && !products.isEmpty()) { %>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            <% for (Product product : products) { %>
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div class="w-full h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
+                    <img src="data:<%= product.getMimeType() %>;base64,<%= product.getImageBase64() %>"
+                         alt="<%= product.getName() %>"
+                         class="object-contain h-full w-full">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 truncate"><%= product.getName() %></h3>
+                    <p class="text-sm text-gray-500 mt-2 line-clamp-2"><%= product.getDescription() %></p>
+                    <p class="text-lg font-bold text-green-600 mt-4">$<%= product.getPrice() %></p>
+
+                    <!-- Render Add to Cart only if user is logged in -->
+                    <% if (session.getAttribute("currentUser") != null) { %>
+                    <form method="post" action="<%= request.getContextPath() %>/add-to-cart" class="mt-4">
+                        <input type="hidden" name="productId" value="<%= product.getId() %>">
+                        <input type="hidden" id="formQuantity" name="quantity" value="1">
+                        <button type="submit"
+                                class="w-full bg-blue-600 text-white py-2 rounded-lg shadow-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                            <i class="fas fa-cart-plus mr-2"></i>Add to Cart
+                        </button>
+                    </form>
+                    <% } else { %>
+                    <p class="text-sm text-gray-500 mt-4">Please <a href="<c:url value='/views/login.jsp' />" class="text-blue-600 hover:underline">log in</a> to add items to your cart.</p>
+                    <% } %>
+                </div>
+            </div>
+            <% } %>
+        </div>
+        <% } else { %>
+        <p class="text-gray-600 text-center">No products are available at the moment. Please check back later.</p>
+        <% } %>
+    </div>
+</section>
+
+
 
 <!-- Features Section -->
 <section class="bg-white py-20">
